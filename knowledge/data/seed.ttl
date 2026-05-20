@@ -1,0 +1,15 @@
+@prefix ex: <http://example.org/health#> .
+
+ex:patient1 a ex:Patient ;
+    ex:displayName "Ana López" ;
+    ex:hasDiagnosis ex:diagDiabetes .
+
+ex:patient2 a ex:Patient ;
+    ex:displayName "Luis Martín" ;
+    ex:hasDiagnosis ex:diagHypertension .
+
+ex:diagDiabetes a ex:Diagnosis ;
+    ex:code "diabetes" .
+
+ex:diagHypertension a ex:Diagnosis ;
+    ex:code "hypertension" .
