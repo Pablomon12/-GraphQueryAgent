@@ -1,4 +1,13 @@
 services:
+  init-fuseki-config:
+    image: alpine:3.21
+    entrypoint: ["/bin/sh", "/bootstrap/init-fuseki-config.sh"]
+    volumes:
+      - fuseki-data:/fuseki
+      - ./docker/init-fuseki-config.sh:/bootstrap/init-fuseki-config.sh:ro
+      - ./docker/fuseki-config.ttl:/bootstrap/fuseki-config.ttl:ro
+    restart: "no"
+
   app:
     build:
       context: .
@@ -20,11 +29,13 @@ services:
     image: stain/jena-fuseki:5.1.0
     environment:
       ADMIN_PASSWORD: admin
+    depends_on:
+      init-fuseki-config:
+        condition: service_completed_successfully
     ports:
       - "3030:3030"
     volumes:
       - fuseki-data:/fuseki
-      - ./docker/fuseki-config.ttl:/fuseki/configuration/dataset.ttl:ro
 
   init-fuseki:
     image: curlimages/curl:8.8.0
