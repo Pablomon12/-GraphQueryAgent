@@ -10,7 +10,7 @@ from ontology_agent.ontology import OntologyExplorer
 
 settings = Settings.from_env()
 ontology_explorer = OntologyExplorer(
-    ontology_path=settings.ontology_path,
+    ontology_paths=settings.ontology_paths,
     ontology_glob=settings.ontology_glob,
 )
 llm_client = LLMClient(model=settings.openai_model)

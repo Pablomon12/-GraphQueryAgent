@@ -17,18 +17,24 @@ RDF_FORMATS = {
 
 
 class OntologyExplorer:
-    def __init__(self, ontology_path: Path, ontology_glob: str = "**/*.*") -> None:
-        self.ontology_path = ontology_path
+    def __init__(self, ontology_paths: list[Path] | tuple[Path, ...], ontology_glob: str = "**/*.*") -> None:
+        self.ontology_paths = tuple(ontology_paths)
         self.ontology_glob = ontology_glob
         self._graph: Graph | None = None
 
     def list_ontology_files(self) -> list[str]:
-        if not self.ontology_path.exists():
-            return []
-
-        files = []
-        for path in sorted(self.ontology_path.glob(self.ontology_glob)):
-            if path.is_file() and path.suffix.lower() in SUPPORTED_SUFFIXES:
+        files: list[str] = []
+        seen: set[Path] = set()
+        for ontology_path in self.ontology_paths:
+            if not ontology_path.exists():
+                continue
+            for path in sorted(ontology_path.glob(self.ontology_glob)):
+                if not path.is_file() or path.suffix.lower() not in SUPPORTED_SUFFIXES:
+                    continue
+                resolved = path.resolve()
+                if resolved in seen:
+                    continue
+                seen.add(resolved)
                 files.append(str(path))
         return files
 
@@ -36,8 +42,8 @@ class OntologyExplorer:
         files = self.list_ontology_files()
         if not files:
             raise FileNotFoundError(
-                f"No ontology files found under '{self.ontology_path}'. "
-                "Add at least one .ttl/.rdf/.owl file or set ONTOLOGY_PATH."
+                "No ontology files found under the configured ontology paths. "
+                "Add at least one .ttl/.rdf/.owl file or set ONTOLOGY_PATHS."
             )
 
     def _load_graph(self) -> Graph:

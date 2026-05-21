@@ -30,7 +30,7 @@ def load_dotenv_if_present(path: Path | None = None) -> None:
 
 @dataclass(frozen=True)
 class Settings:
-    ontology_path: Path
+    ontology_paths: tuple[Path, ...]
     ontology_glob: str
     fuseki_query_endpoint: str
     openai_model: str
@@ -38,7 +38,7 @@ class Settings:
 
     @classmethod
     def from_env(cls) -> "Settings":
-        ontology_path = Path(os.getenv("ONTOLOGY_PATH", "knowledge/ontology")).expanduser()
+        ontology_paths = cls._ontology_paths_from_env()
         ontology_glob = os.getenv("ONTOLOGY_GLOB", "**/*.*")
         fuseki_query_endpoint = os.getenv(
             "FUSEKI_QUERY_ENDPOINT",
@@ -48,15 +48,40 @@ class Settings:
         max_steps = int(os.getenv("AGENT_MAX_STEPS", "10"))
 
         return cls(
-            ontology_path=ontology_path,
+            ontology_paths=ontology_paths,
             ontology_glob=ontology_glob,
             fuseki_query_endpoint=fuseki_query_endpoint,
             openai_model=openai_model,
             max_steps=max_steps,
         )
 
+    @staticmethod
+    def _ontology_paths_from_env() -> tuple[Path, ...]:
+        raw_paths = os.getenv("ONTOLOGY_PATHS")
+        if raw_paths:
+            candidates = [item.strip() for item in raw_paths.split(",")]
+        else:
+            legacy_path = os.getenv("ONTOLOGY_PATH")
+            if legacy_path:
+                candidates = [legacy_path.strip()]
+            else:
+                candidates = ["knowledge/ontology", "knowledge/data"]
+
+        paths: list[Path] = []
+        seen: set[Path] = set()
+        for candidate in candidates:
+            if not candidate:
+                continue
+            path = Path(candidate).expanduser()
+            if path in seen:
+                continue
+            seen.add(path)
+            paths.append(path)
+
+        return tuple(paths)
+
     def ontology_exists(self) -> bool:
-        return self.ontology_path.exists() and self.ontology_path.is_dir()
+        return any(path.exists() and path.is_dir() for path in self.ontology_paths)
 
 
 load_dotenv_if_present()

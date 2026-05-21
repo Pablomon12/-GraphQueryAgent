@@ -1,12 +1,13 @@
 import os
 from pathlib import Path
 
+from rdflib import RDF, Graph, Namespace
 from fastapi.testclient import TestClient
 
 from ontology_agent.agent import OntologyAgent
-from ontology_agent.config import load_dotenv_if_present
+from ontology_agent.config import Settings, load_dotenv_if_present
 from ontology_agent.clients.sparql import SparqlClient
-from ontology_agent.main import app
+from ontology_agent.main import app, settings
 from ontology_agent.ontology import OntologyExplorer
 
 
@@ -19,31 +20,37 @@ def test_health_endpoint_reports_ready_ontology() -> None:
     payload = response.json()
     assert payload["status"] == "ok"
     assert payload["ontology_ready"] is True
-    assert payload["ontology_path"] == "knowledge/ontology"
+    assert payload["ontology_paths"] == [str(path) for path in settings.ontology_paths]
 
 
 def test_ontology_explorer_discovers_files_and_schema() -> None:
-    explorer = OntologyExplorer(Path("knowledge/ontology"))
+    explorer = OntologyExplorer((Path("knowledge/ontology"), Path("knowledge/data")))
 
     files = explorer.list_ontology_files()
     prefixes = explorer.list_prefixes()
     classes = explorer.list_classes()
     properties = explorer.list_properties()
-    individuals = explorer.list_individuals("http://example.org/health#Patient")
-    profile = explorer.get_class_profile("http://example.org/health#Patient")
-    usage = explorer.get_usage_examples("http://example.org/health#hasDiagnosis")
+    drug_uri = "https://example.org/farmacos-aprobados/ontology#Drug"
+    property_uri = "https://example.org/farmacos-aprobados/ontology#hasInteraction"
+    individuals = explorer.list_individuals(drug_uri)
+    profile = explorer.get_class_profile(drug_uri)
+    usage = explorer.get_usage_examples(property_uri)
     summary = explorer.get_schema_summary()
 
-    assert files == ["knowledge/ontology/example.ttl"]
-    assert any(item["prefix"] == "ex" for item in prefixes)
-    assert any(item["uri"].endswith("#Patient") for item in classes)
-    assert any(item["uri"].endswith("#hasDiagnosis") for item in properties)
-    assert individuals == []
-    assert profile["instance_count"] == 0
-    assert profile["top_properties"] == []
-    assert usage == []
-    assert summary["class_count"] >= 2
-    assert summary["sample_individuals"]["http://example.org/health#Patient"] == []
+    assert files == [
+        "knowledge/ontology/farmacos_aprobados.ttl",
+        "knowledge/data/farm_aprobados_inst.ttl",
+    ]
+    assert any(item["prefix"] == "" for item in prefixes)
+    assert any(item["uri"].endswith("#Drug") for item in classes)
+    assert any(item["uri"].endswith("#hasInteraction") for item in properties)
+    assert individuals != []
+    assert all(drug_uri in item["types"] for item in individuals)
+    assert profile["instance_count"] > 0
+    assert any(item["uri"].endswith("#hasInteraction") for item in profile["top_properties"])
+    assert usage != []
+    assert summary["class_count"] >= 8
+    assert any(samples for samples in summary["sample_individuals"].values())
 
 
 def test_load_dotenv_if_present_populates_missing_values(tmp_path, monkeypatch) -> None:
@@ -77,7 +84,7 @@ class _FakeSparqlClient:
 
 
 def test_agent_uses_plain_messages_for_tool_results() -> None:
-    explorer = OntologyExplorer(Path("knowledge/ontology"))
+    explorer = OntologyExplorer((Path("knowledge/ontology"), Path("knowledge/data")))
     llm_client = _FakeLLMClient(
         [
             '{"tool":"get_schema_summary","args":{}}',
@@ -96,3 +103,33 @@ def test_agent_uses_plain_messages_for_tool_results() -> None:
     second_call_messages = llm_client.calls[1]
     assert second_call_messages[-1]["role"] == "user"
     assert "Tool result for 'get_schema_summary'" in str(second_call_messages[-1]["content"])
+
+
+def test_settings_support_default_and_legacy_ontology_paths(monkeypatch) -> None:
+    monkeypatch.delenv("ONTOLOGY_PATHS", raising=False)
+    monkeypatch.delenv("ONTOLOGY_PATH", raising=False)
+    default_settings = Settings.from_env()
+    assert default_settings.ontology_paths == (Path("knowledge/ontology"), Path("knowledge/data"))
+
+    monkeypatch.setenv("ONTOLOGY_PATH", "custom/ontology")
+    legacy_settings = Settings.from_env()
+    assert legacy_settings.ontology_paths == (Path("custom/ontology"),)
+
+    monkeypatch.setenv("ONTOLOGY_PATHS", "first/path,second/path,first/path")
+    multi_settings = Settings.from_env()
+    assert multi_settings.ontology_paths == (Path("first/path"), Path("second/path"))
+
+
+def test_fuseki_configuration_publishes_union_default_graph() -> None:
+    graph = Graph()
+    graph.parse("docker/fuseki-config.ttl", format="turtle")
+
+    fuseki = Namespace("http://jena.apache.org/fuseki#")
+    tdb2 = Namespace("http://jena.apache.org/2016/tdb#")
+    service = next(graph.subjects(RDF.type, fuseki.Service))
+    dataset = graph.value(service, fuseki.dataset)
+
+    assert graph.value(service, fuseki.name) is not None
+    assert graph.value(dataset, RDF.type) == tdb2.DatasetTDB2
+    assert str(graph.value(dataset, tdb2.location)) == "/fuseki/databases/dataset"
+    assert str(graph.value(dataset, tdb2.unionDefaultGraph)).lower() == "true"

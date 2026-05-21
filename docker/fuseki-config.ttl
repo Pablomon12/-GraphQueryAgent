@@ -1,0 +1,19 @@
+PREFIX fuseki: <http://jena.apache.org/fuseki#>
+PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX tdb2:   <http://jena.apache.org/2016/tdb#>
+
+<#service> rdf:type fuseki:Service ;
+    rdfs:label "Ontology Agent dataset" ;
+    fuseki:name "dataset" ;
+    fuseki:serviceQuery "query" ;
+    fuseki:serviceQuery "sparql" ;
+    fuseki:serviceUpdate "update" ;
+    fuseki:serviceUpload "upload" ;
+    fuseki:serviceReadWriteGraphStore "data" ;
+    fuseki:serviceReadGraphStore "get" ;
+    fuseki:dataset <#dataset> .
+
+<#dataset> rdf:type tdb2:DatasetTDB2 ;
+    tdb2:location "/fuseki/databases/dataset" ;
+    tdb2:unionDefaultGraph true .

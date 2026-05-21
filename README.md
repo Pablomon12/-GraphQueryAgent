@@ -16,7 +16,8 @@ La arquitectura está inspirada en `vercel-labs/oss-data-analyst`, pero adaptada
 
 ## Variables de entorno
 
-- `ONTOLOGY_PATH`: carpeta con archivos `.ttl`, `.rdf`, `.owl`, `.nt` o `.xml`
+- `ONTOLOGY_PATHS`: lista separada por comas de carpetas con archivos `.ttl`, `.rdf`, `.owl`, `.nt` o `.xml`
+- `ONTOLOGY_PATH`: compatibilidad hacia atrás para una sola carpeta de exploración
 - `ONTOLOGY_GLOB`: patrón opcional para descubrir archivos RDF
 - `FUSEKI_QUERY_ENDPOINT`: endpoint SPARQL de lectura
 - `OPENAI_MODEL`: modelo OpenAI a usar
@@ -25,7 +26,7 @@ La arquitectura está inspirada en `vercel-labs/oss-data-analyst`, pero adaptada
 Valores por defecto:
 
 ```bash
-ONTOLOGY_PATH=knowledge/ontology
+ONTOLOGY_PATHS=knowledge/ontology,knowledge/data
 FUSEKI_QUERY_ENDPOINT=http://localhost:3030/dataset/query
 OPENAI_MODEL=gpt-4.1-mini
 AGENT_MAX_STEPS=10
@@ -38,7 +39,7 @@ src/ontology_agent/      Código de la aplicación
 src/ontology_agent/api/  Rutas HTTP de FastAPI
 src/ontology_agent/agent/ Orquestación del agente y prompts
 src/ontology_agent/clients/ Clientes externos: OpenAI y SPARQL
-src/ontology_agent/ontology/ Exploración local RDF/OWL
+src/ontology_agent/ontology/ Exploración local RDF/OWL sobre esquema e instancias
 knowledge/ontology/     Ontologías RDF/OWL cargadas localmente
 knowledge/data/         Datos semilla cargados en Fuseki
 docker/                 Scripts de bootstrap de infraestructura local
@@ -60,11 +61,15 @@ El proyecto incluye un despliegue con Docker Compose que:
 - arranca Fuseki en `http://127.0.0.1:3030`
 - carga automáticamente la ontología desde `knowledge/ontology/` en el grafo `http://example.org/graph/ontology`
 - carga automáticamente los datos semilla desde `knowledge/data/` en el grafo `http://example.org/graph/data`
+- expone en Fuseki un `default graph` que es la unión de los grafos nombrados del dataset
 
 La separación conceptual es:
 
 - `knowledge/ontology/`: esquema RDF/OWL
 - `knowledge/data/`: instancias persistidas en Fuseki
+
+Durante el `schema_discovery`, el agente combina localmente ambos directorios para explorar clases, propiedades e individuos antes de generar SPARQL.
+Durante la ejecución SPARQL, Fuseki mantiene los grafos nombrados separados y además permite consultas simples sobre su unión desde `/dataset/query`.
 
 Arranque:
 
@@ -78,11 +83,25 @@ La app dentro de Docker consulta Fuseki usando:
 FUSEKI_QUERY_ENDPOINT=http://fuseki:3030/dataset/query
 ```
 
+Eso permite consultas del tipo:
+
+```sparql
+PREFIX : <https://example.org/farmacos-aprobados/ontology#>
+SELECT ?drug WHERE {
+  ?drug a :Drug .
+}
+LIMIT 5
+```
+
+sin tener que añadir `GRAPH` ni `FROM`, porque el `default graph` se publica como unión del dataset.
+
 ## Tests
 
 ```bash
 uv run pytest
 ```
+
+Si cambias una instalación ya existente de Fuseki desde el modo autogenerado al modo con configuración explícita, puede ser necesario recrear el volumen de Fuseki una vez para evitar conflictos con la definición previa del dataset.
 
 ## Endpoints
 
@@ -109,7 +128,7 @@ Ejemplo:
 ```bash
 curl -s -X POST http://127.0.0.1:8000/ask \
   -H "Content-Type: application/json" \
-  -d '{"question":"¿Qué pacientes tienen diagnóstico de diabetes?"}' | jq
+  -d '{"question":"¿Qué fármacos tienen como indicación osteoporosis?"}' | jq
 ```
 
 ## Contrato de respuesta

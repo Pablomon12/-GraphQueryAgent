@@ -6,7 +6,7 @@ services:
       - .env
     environment:
       FUSEKI_QUERY_ENDPOINT: http://fuseki:3030/dataset/query
-      ONTOLOGY_PATH: knowledge/ontology
+      ONTOLOGY_PATHS: knowledge/ontology,knowledge/data
     depends_on:
       init-fuseki:
         condition: service_completed_successfully
@@ -14,16 +14,17 @@ services:
       - "8000:8000"
     volumes:
       - ./knowledge/ontology:/app/knowledge/ontology:ro
+      - ./knowledge/data:/app/knowledge/data:ro
 
   fuseki:
     image: stain/jena-fuseki:5.1.0
     environment:
       ADMIN_PASSWORD: admin
-      FUSEKI_DATASET_1: dataset
     ports:
       - "3030:3030"
     volumes:
       - fuseki-data:/fuseki
+      - ./docker/fuseki-config.ttl:/fuseki/configuration/dataset.ttl:ro
 
   init-fuseki:
     image: curlimages/curl:8.8.0

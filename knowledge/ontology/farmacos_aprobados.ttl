@@ -1,0 +1,167 @@
+@prefix : <https://example.org/farmacos-aprobados/ontology#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+: a owl:Ontology ;
+    rdfs:label "Ontologia de farmacos aprobados"@es ;
+    rdfs:comment "Modelo OWL 2 para representar la estructura semantica del dataset farmacos_aprobados.csv y sus instancias."@es .
+
+:Drug a owl:Class ;
+    rdfs:label "Drug" ;
+    rdfs:comment "Approved drug or active substance identified by prefName." .
+
+:DrugType a owl:Class ;
+    rdfs:label "DrugType" ;
+    rdfs:comment "Nature of the drug, such as Small molecule or Protein." .
+
+:TradeName a owl:Class ;
+    rdfs:label "TradeName" ;
+    rdfs:comment "Commercial or brand name associated with a drug." .
+
+:Indication a owl:Class ;
+    rdfs:label "Indication" ;
+    rdfs:comment "Therapeutic indication or approved use." .
+
+:Target a owl:Class ;
+    rdfs:label "Target" ;
+    rdfs:comment "Biological target referenced in the source dataset." .
+
+:TargetClass a owl:Class ;
+    rdfs:label "TargetClass" ;
+    rdfs:comment "Functional category assigned to a biological target." .
+
+:MechanismOfAction a owl:Class ;
+    rdfs:label "MechanismOfAction" ;
+    rdfs:comment "Mechanism of action asserted in the dataset." .
+
+:DrugTargetInteraction a owl:Class ;
+    rdfs:label "DrugTargetInteraction" ;
+    rdfs:comment "Interaction assertion linking a drug with one or more targets and mechanisms." .
+
+:DatasetRow a owl:Class ;
+    rdfs:label "DatasetRow" ;
+    rdfs:comment "Source row from farmacos_aprobados.csv used for traceability." .
+
+:hasDrugType a owl:ObjectProperty ;
+    rdfs:label "hasDrugType" ;
+    rdfs:domain :Drug ;
+    rdfs:range :DrugType ;
+    rdfs:comment "Links a drug to its declared drug type." .
+
+:hasTradeName a owl:ObjectProperty ;
+    rdfs:label "hasTradeName" ;
+    rdfs:domain :Drug ;
+    rdfs:range :TradeName ;
+    rdfs:comment "Links a drug to one of its trade names." .
+
+:hasIndication a owl:ObjectProperty ;
+    rdfs:label "hasIndication" ;
+    rdfs:domain :Drug ;
+    rdfs:range :Indication ;
+    rdfs:comment "Links a drug to one therapeutic indication." .
+
+:hasInteraction a owl:ObjectProperty ;
+    rdfs:label "hasInteraction" ;
+    rdfs:domain :Drug ;
+    rdfs:range :DrugTargetInteraction ;
+    rdfs:comment "Links a drug to an interaction assertion derived from a dataset row." .
+
+:hasTarget a owl:ObjectProperty ;
+    rdfs:label "hasTarget" ;
+    rdfs:domain :DrugTargetInteraction ;
+    rdfs:range :Target ;
+    rdfs:comment "Links an interaction assertion to one or more targets." .
+
+:hasMechanismOfAction a owl:ObjectProperty ;
+    rdfs:label "hasMechanismOfAction" ;
+    rdfs:domain :DrugTargetInteraction ;
+    rdfs:range :MechanismOfAction ;
+    rdfs:comment "Links an interaction assertion to one or more mechanism concepts." .
+
+:hasTargetClass a owl:ObjectProperty ;
+    rdfs:label "hasTargetClass" ;
+    rdfs:domain :Target ;
+    rdfs:range :TargetClass ;
+    rdfs:comment "Links a target to a functional target class when attribution is safe." .
+
+:sourceRow a owl:ObjectProperty ;
+    rdfs:label "sourceRow" ;
+    rdfs:domain owl:Thing ;
+    rdfs:range :DatasetRow ;
+    rdfs:comment "Links an entity or assertion back to the source dataset row." .
+
+:rowIdentifier a owl:DatatypeProperty ;
+    rdfs:label "rowIdentifier" ;
+    rdfs:domain :DatasetRow ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "Numeric row identifier in the CSV." .
+
+:prefNameLiteral a owl:DatatypeProperty ;
+    rdfs:label "prefNameLiteral" ;
+    rdfs:domain :Drug ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Original prefName literal from the CSV." .
+
+:tradeNameLiteral a owl:DatatypeProperty ;
+    rdfs:label "tradeNameLiteral" ;
+    rdfs:domain :TradeName ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Original trade name literal." .
+
+:hasApprovedSymbol a owl:DatatypeProperty ;
+    rdfs:label "hasApprovedSymbol" ;
+    rdfs:domain :Target ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Approved symbol string from the dataset." .
+
+:rawLabelCell a owl:DatatypeProperty ;
+    rdfs:label "rawLabelCell" ;
+    rdfs:domain :DatasetRow ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Original label cell from the CSV." .
+
+:rawTargetNameCell a owl:DatatypeProperty ;
+    rdfs:label "rawTargetNameCell" ;
+    rdfs:domain :DatasetRow ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Original targetName cell from the CSV." .
+
+:rawApprovedSymbolCell a owl:DatatypeProperty ;
+    rdfs:label "rawApprovedSymbolCell" ;
+    rdfs:domain :DatasetRow ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Original approvedSymbol cell from the CSV." .
+
+:rawTargetClassCell a owl:DatatypeProperty ;
+    rdfs:label "rawTargetClassCell" ;
+    rdfs:domain :DatasetRow ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Original targetClass cell from the CSV." .
+
+:rawMechanismCell a owl:DatatypeProperty ;
+    rdfs:label "rawMechanismCell" ;
+    rdfs:domain :DatasetRow ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Original mechanismOfAction cell from the CSV." .
+
+:targetNameText a owl:DatatypeProperty ;
+    rdfs:label "targetNameText" ;
+    rdfs:domain :DrugTargetInteraction ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Target name text attached conservatively at interaction level." .
+
+:targetClassText a owl:DatatypeProperty ;
+    rdfs:label "targetClassText" ;
+    rdfs:domain :DrugTargetInteraction ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Target class text attached conservatively at interaction level." .
+
+:mechanismText a owl:DatatypeProperty ;
+    rdfs:label "mechanismText" ;
+    rdfs:domain :DrugTargetInteraction ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Mechanism text attached conservatively at interaction level." .
+

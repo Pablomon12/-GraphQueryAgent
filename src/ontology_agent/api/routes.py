@@ -20,7 +20,7 @@ def create_router(
     def health() -> HealthResponse:
         return HealthResponse(
             status="ok" if settings.ontology_exists() else "degraded",
-            ontology_path=str(settings.ontology_path),
+            ontology_paths=[str(path) for path in settings.ontology_paths],
             ontology_ready=bool(ontology_explorer.list_ontology_files()),
             fuseki_query_endpoint=settings.fuseki_query_endpoint,
             openai_model=settings.openai_model,
@@ -38,4 +38,3 @@ def create_router(
         return AskResponse(**result)
 
     return router
-

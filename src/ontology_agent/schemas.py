@@ -20,7 +20,7 @@ class AskResponse(BaseModel):
 
 class HealthResponse(BaseModel):
     status: str
-    ontology_path: str
+    ontology_paths: list[str]
     ontology_ready: bool
     fuseki_query_endpoint: str
     openai_model: str
