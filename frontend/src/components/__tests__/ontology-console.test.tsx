@@ -2,6 +2,24 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { OntologyConsole } from '@/components/ontology-console'
 
+function sseResponse(events: string[]): Response {
+  const encoder = new TextEncoder()
+  const stream = new ReadableStream({
+    start(controller) {
+      for (const event of events) {
+        controller.enqueue(encoder.encode(event))
+      }
+      controller.close()
+    },
+  })
+
+  return new Response(stream, {
+    headers: {
+      'content-type': 'text/event-stream',
+    },
+  })
+}
+
 describe('OntologyConsole', () => {
   afterEach(() => {
     vi.restoreAllMocks()
@@ -23,7 +41,7 @@ describe('OntologyConsole', () => {
     render(<OntologyConsole />)
 
     await waitFor(() => {
-      expect(screen.getByText('Backend ready')).toBeInTheDocument()
+      expect(screen.getByText('Backend listo')).toBeInTheDocument()
     })
     expect(screen.getByText('gpt-4.1-mini')).toBeInTheDocument()
   })
@@ -42,21 +60,16 @@ describe('OntologyConsole', () => {
         ),
       )
       .mockResolvedValueOnce(
-        new Response(
-          JSON.stringify({
-            question: '¿Qué fármacos tienen como indicación osteoporosis?',
-            sparql: 'SELECT * WHERE { ?drug ?p ?o } LIMIT 10',
-            results: { head: { vars: ['drug'] }, results: { bindings: [] } },
-            answer: 'ABALOPARATIDE aparece asociado a osteoporosis.',
-            phases: ['planning', 'schema_discovery', 'execution', 'reporting'],
-            steps: 4,
-          }),
-        ),
-      )
+        sseResponse([
+          'event: answer_delta\ndata: {"type":"answer_delta","delta":"ABALOPARATIDE aparece ","step":4}\n\n',
+          'event: answer_delta\ndata: {"type":"answer_delta","delta":"asociado a osteoporosis.","step":4}\n\n',
+          'event: final\ndata: {"type":"final","payload":{"question":"¿Qué fármacos tienen como indicación osteoporosis?","sparql":"SELECT * WHERE { ?drug ?p ?o } LIMIT 10","results":{"head":{"vars":["drug"]},"results":{"bindings":[]}},"answer":"ABALOPARATIDE aparece asociado a osteoporosis.","phases":["planning","schema_discovery","execution","reporting"],"steps":4}}\n\n',
+        ]),
+    )
 
     render(<OntologyConsole />)
 
-    fireEvent.click(screen.getByRole('button', { name: 'Ask' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Consultar' }))
 
     await waitFor(() => {
       expect(
@@ -64,7 +77,7 @@ describe('OntologyConsole', () => {
       ).toBeInTheDocument()
     })
     expect(screen.getByText('SELECT * WHERE { ?drug ?p ?o } LIMIT 10')).toBeInTheDocument()
-    expect(screen.getByText('planning')).toBeInTheDocument()
+    expect(screen.getByText('Planificación')).toBeInTheDocument()
   })
 
   it('shows an error when question is empty', async () => {
@@ -82,14 +95,14 @@ describe('OntologyConsole', () => {
 
     render(<OntologyConsole />)
 
-    fireEvent.change(screen.getByLabelText('What do you want to ask the ontology?'), {
+    fireEvent.change(screen.getByLabelText('Pregunta para la ontología'), {
       target: { value: '   ' },
     })
-    fireEvent.click(screen.getByRole('button', { name: 'Ask' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Consultar' }))
 
     await waitFor(() => {
       expect(
-        screen.getByText('Write a question before submitting.'),
+        screen.getByText('Escribe una pregunta antes de consultar.'),
       ).toBeInTheDocument()
     })
   })

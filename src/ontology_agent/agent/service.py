@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Iterator
 from typing import Any
 
 from ontology_agent.agent.prompts import SYSTEM_PROMPT
@@ -122,6 +123,119 @@ class OntologyAgent:
             "steps": self.max_steps,
         }
 
+    def ask_stream(self, question: str) -> Iterator[dict[str, Any]]:
+        self.ontology_explorer.ensure_ready()
+
+        messages: list[dict[str, Any]] = [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {
+                "role": "user",
+                "content": (
+                    "User question: "
+                    f"{question}\n"
+                    "Explore the ontology before building SPARQL."
+                ),
+            },
+        ]
+
+        for step in range(self.max_steps):
+            yield {"type": "phase", "phase": "llm_call", "step": step + 1}
+            raw_response = ""
+            streamed_answer = ""
+
+            for chunk in self._stream_or_call(messages):
+                raw_response += chunk
+                answer_prefix = self._extract_json_string_value_prefix(raw_response, "answer")
+                if answer_prefix.startswith(streamed_answer):
+                    delta = answer_prefix[len(streamed_answer) :]
+                    if delta:
+                        streamed_answer = answer_prefix
+                        yield {"type": "answer_delta", "delta": delta, "step": step + 1}
+
+            try:
+                response = self._parse_json(raw_response)
+            except ValueError:
+                messages.extend(
+                    [
+                        {"role": "assistant", "content": raw_response},
+                        {
+                            "role": "user",
+                            "content": (
+                                "Your previous answer was not valid JSON. "
+                                "Reply only with valid JSON."
+                            ),
+                        },
+                    ]
+                )
+                yield {"type": "phase", "phase": "retry_invalid_json", "step": step + 1}
+                continue
+
+            if response.get("final") is True:
+                answer = response.get("answer", "")
+                if isinstance(answer, str) and answer.startswith(streamed_answer):
+                    delta = answer[len(streamed_answer) :]
+                    if delta:
+                        yield {"type": "answer_delta", "delta": delta, "step": step + 1}
+
+                yield {
+                    "type": "final",
+                    "payload": {
+                        "question": question,
+                        "sparql": response.get("sparql"),
+                        "results": response.get("results"),
+                        "answer": answer,
+                        "phases": response.get("phases", []),
+                        "steps": step + 1,
+                    },
+                }
+                return
+
+            tool_name = response.get("tool")
+            args = response.get("args", {})
+            tool = self.tools.get(tool_name)
+            yield {"type": "phase", "phase": f"tool:{tool_name}", "step": step + 1}
+
+            if tool is None:
+                tool_result: dict[str, Any] = {
+                    "error": f"Unknown tool '{tool_name}'",
+                    "available_tools": sorted(self.tools.keys()),
+                }
+            else:
+                try:
+                    tool_result = tool(**args)
+                except Exception as exc:
+                    tool_result = {"error": str(exc), "tool": tool_name}
+
+            messages.extend(
+                [
+                    {
+                        "role": "assistant",
+                        "content": json.dumps(response, ensure_ascii=False),
+                    },
+                    {
+                        "role": "user",
+                        "content": (
+                            f"Tool result for '{tool_name}':\n"
+                            f"{json.dumps(tool_result, ensure_ascii=False)}\n\n"
+                            "Continue from this result. "
+                            "Reply only with valid JSON."
+                        ),
+                    },
+                ]
+            )
+
+        yield {
+            "type": "final",
+            "payload": {
+                "question": question,
+                "sparql": None,
+                "results": None,
+                "answer": "The agent could not finish within the configured step limit.",
+                "phases": [],
+                "steps": self.max_steps,
+            },
+        }
+
     @staticmethod
     def _parse_json(text: str) -> dict[str, Any]:
         text = text.strip()
@@ -134,6 +248,66 @@ class OntologyAgent:
             return json.loads(text)
         except json.JSONDecodeError as exc:
             raise ValueError("Invalid JSON") from exc
+
+    def _stream_or_call(self, messages: list[dict[str, Any]]) -> Iterator[str]:
+        stream = getattr(self.llm_client, "stream", None)
+        if callable(stream):
+            yield from stream(messages)
+            return
+
+        yield self.llm_client.call(messages)
+
+    @staticmethod
+    def _extract_json_string_value_prefix(text: str, key: str) -> str:
+        marker = f'"{key}"'
+        key_index = text.find(marker)
+        if key_index == -1:
+            return ""
+
+        colon_index = text.find(":", key_index + len(marker))
+        if colon_index == -1:
+            return ""
+
+        quote_index = text.find('"', colon_index + 1)
+        if quote_index == -1:
+            return ""
+
+        chars: list[str] = []
+        index = quote_index + 1
+        while index < len(text):
+            char = text[index]
+            if char == '"':
+                return "".join(chars)
+            if char == "\\":
+                if index + 1 >= len(text):
+                    return "".join(chars)
+                escaped = text[index + 1]
+                if escaped == "n":
+                    chars.append("\n")
+                elif escaped == "r":
+                    chars.append("\r")
+                elif escaped == "t":
+                    chars.append("\t")
+                elif escaped in {'"', "\\", "/"}:
+                    chars.append(escaped)
+                elif escaped == "u":
+                    hex_value = text[index + 2 : index + 6]
+                    if len(hex_value) < 4:
+                        return "".join(chars)
+                    try:
+                        chars.append(chr(int(hex_value, 16)))
+                    except ValueError:
+                        return "".join(chars)
+                    index += 6
+                    continue
+                else:
+                    return "".join(chars)
+                index += 2
+                continue
+            chars.append(char)
+            index += 1
+
+        return "".join(chars)
 
     def _tool_run_sparql(self, query: str) -> Any:
         validate_sparql_readonly(query)

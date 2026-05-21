@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+import json
+from collections.abc import Iterator
+
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import StreamingResponse
 
 from ontology_agent.agent import OntologyAgent
 from ontology_agent.config import Settings
@@ -37,4 +41,35 @@ def create_router(
 
         return AskResponse(**result)
 
+    @router.post("/ask/stream")
+    def ask_stream(request: AskRequest) -> StreamingResponse:
+        def event_stream() -> Iterator[str]:
+            try:
+                for event in agent.ask_stream(request.question):
+                    event_type = str(event.get("type", "message"))
+                    yield (
+                        f"event: {event_type}\n"
+                        f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+                    )
+            except FileNotFoundError as exc:
+                yield _sse_error(str(exc))
+            except Exception as exc:
+                yield _sse_error(f"Agent execution failed: {exc}")
+
+        return StreamingResponse(
+            event_stream(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "X-Accel-Buffering": "no",
+            },
+        )
+
     return router
+
+
+def _sse_error(detail: str) -> str:
+    return (
+        "event: error\n"
+        f"data: {json.dumps({'type': 'error', 'detail': detail}, ensure_ascii=False)}\n\n"
+    )

@@ -1,23 +1,13 @@
-import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
-import type { ReactNode } from 'react'
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
 
-import './globals.css'
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-})
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-})
+import "./globals.css";
 
 export const metadata: Metadata = {
-  title: 'Ontology Agent Console',
-  description: 'Technical frontend for ontology-backed SPARQL question answering.',
-}
+  title: "Ontology Agent Console",
+  description:
+    "Consola para consultar una ontología con lenguaje natural, SPARQL trazable y resultados verificables.",
+};
 
 export default function RootLayout({
   children,
@@ -25,8 +15,8 @@ export default function RootLayout({
   children: ReactNode
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="es">
       <body>{children}</body>
     </html>
-  )
+  );
 }

@@ -2,9 +2,11 @@ import os
 from pathlib import Path
 
 from rdflib import RDF, Graph, Namespace
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from ontology_agent.agent import OntologyAgent
+from ontology_agent.api.routes import create_router
 from ontology_agent.config import Settings, load_dotenv_if_present
 from ontology_agent.clients.sparql import SparqlClient
 from ontology_agent.main import app, settings
@@ -78,9 +80,35 @@ class _FakeLLMClient:
         return self._responses.pop(0)
 
 
+class _FakeStreamingLLMClient:
+    def __init__(self, responses: list[list[str]]) -> None:
+        self._responses = responses
+        self.calls: list[list[dict[str, object]]] = []
+
+    def stream(self, messages: list[dict[str, object]]):
+        self.calls.append(messages.copy())
+        yield from self._responses.pop(0)
+
+
 class _FakeSparqlClient:
     def run_query(self, query: str) -> dict[str, object]:
         return {"head": {"vars": ["patient"]}, "results": {"bindings": []}}
+
+
+class _FakeStreamingAgent:
+    def ask_stream(self, question: str):
+        yield {"type": "answer_delta", "delta": f"Respuesta a {question}", "step": 1}
+        yield {
+            "type": "final",
+            "payload": {
+                "question": question,
+                "sparql": "SELECT * WHERE { ?s ?p ?o } LIMIT 1",
+                "results": {"ok": True},
+                "answer": f"Respuesta a {question}",
+                "phases": ["reporting"],
+                "steps": 1,
+            },
+        }
 
 
 def test_agent_uses_plain_messages_for_tool_results() -> None:
@@ -103,6 +131,55 @@ def test_agent_uses_plain_messages_for_tool_results() -> None:
     second_call_messages = llm_client.calls[1]
     assert second_call_messages[-1]["role"] == "user"
     assert "Tool result for 'get_schema_summary'" in str(second_call_messages[-1]["content"])
+
+
+def test_agent_streams_answer_deltas_and_final_payload() -> None:
+    explorer = OntologyExplorer((Path("knowledge/ontology"), Path("knowledge/data")))
+    llm_client = _FakeStreamingLLMClient(
+        [
+            ['{"tool":"get_schema_summary","args":{}}'],
+            [
+                '{"final":true,"sparql":"SELECT * WHERE { ?s ?p ?o } LIMIT 1",',
+                '"results":{"ok":true},"answer":"Respuesta ',
+                'fluida.","phases":["planning","reporting"]}',
+            ],
+        ]
+    )
+    agent = OntologyAgent(
+        llm_client=llm_client,  # type: ignore[arg-type]
+        ontology_explorer=explorer,
+        sparql_client=_FakeSparqlClient(),  # type: ignore[arg-type]
+    )
+
+    events = list(agent.ask_stream("Pregunta"))
+
+    deltas = [event["delta"] for event in events if event["type"] == "answer_delta"]
+    final_event = next(event for event in events if event["type"] == "final")
+    assert "".join(deltas) == "Respuesta fluida."
+    assert final_event["payload"]["answer"] == "Respuesta fluida."
+    assert final_event["payload"]["steps"] == 2
+
+
+def test_stream_endpoint_returns_sse_events() -> None:
+    test_app = FastAPI()
+    explorer = OntologyExplorer((Path("knowledge/ontology"), Path("knowledge/data")))
+    test_app.include_router(
+        create_router(
+            agent=_FakeStreamingAgent(),  # type: ignore[arg-type]
+            ontology_explorer=explorer,
+            settings=Settings.from_env(),
+        )
+    )
+    client = TestClient(test_app)
+
+    with client.stream("POST", "/ask/stream", json={"question": "osteoporosis"}) as response:
+        body = response.read().decode()
+
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/event-stream")
+    assert "event: answer_delta" in body
+    assert "event: final" in body
+    assert '"answer": "Respuesta a osteoporosis"' in body
 
 
 def test_settings_support_default_and_legacy_ontology_paths(monkeypatch) -> None:
