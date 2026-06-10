@@ -33,6 +33,7 @@ class Settings:
     ontology_paths: tuple[Path, ...]
     ontology_glob: str
     fuseki_query_endpoint: str
+    graphrag_api_base_url: str
     openai_model: str
     max_steps: int
 
@@ -44,6 +45,7 @@ class Settings:
             "FUSEKI_QUERY_ENDPOINT",
             "http://localhost:3030/dataset/query",
         )
+        graphrag_api_base_url = os.getenv("GRAPHRAG_API_BASE_URL", "http://localhost:8001")
         openai_model = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
         max_steps = int(os.getenv("AGENT_MAX_STEPS", "10"))
 
@@ -51,6 +53,7 @@ class Settings:
             ontology_paths=ontology_paths,
             ontology_glob=ontology_glob,
             fuseki_query_endpoint=fuseki_query_endpoint,
+            graphrag_api_base_url=graphrag_api_base_url,
             openai_model=openai_model,
             max_steps=max_steps,
         )

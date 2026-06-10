@@ -11,11 +11,25 @@ export type AskResponse = {
   steps: number
 }
 
+export type BaselineResponse = {
+  question: string
+  answer: string
+  steps: number
+}
+
+export type GraphRAGResponse = {
+  question: string
+  answer: string
+  results: unknown
+  steps: number
+}
+
 export type HealthResponse = {
   status: string
   ontology_paths: string[]
   ontology_ready: boolean
   fuseki_query_endpoint: string
+  graphrag_api_base_url: string
   openai_model: string
 }
 

@@ -5,6 +5,7 @@ from collections.abc import Iterator
 from typing import Any
 
 from ontology_agent.agent.prompts import SYSTEM_PROMPT
+from ontology_agent.catalog import SemanticCatalogReader
 from ontology_agent.clients.llm import LLMClient
 from ontology_agent.clients.sparql import SparqlClient, validate_sparql_readonly
 from ontology_agent.ontology import OntologyExplorer
@@ -17,12 +18,15 @@ class OntologyAgent:
         ontology_explorer: OntologyExplorer,
         sparql_client: SparqlClient,
         max_steps: int = 10,
+        semantic_catalog: SemanticCatalogReader | None = None,
     ) -> None:
         self.llm_client = llm_client
         self.ontology_explorer = ontology_explorer
         self.sparql_client = sparql_client
         self.max_steps = max_steps
+        self.semantic_catalog = semantic_catalog or SemanticCatalogReader()
         self.tools = {
+            "read_semantic_catalog": self.semantic_catalog.read,
             "get_schema_summary": self.ontology_explorer.get_schema_summary,
             "list_ontology_files": self.ontology_explorer.list_ontology_files,
             "list_prefixes": self.ontology_explorer.list_prefixes,
@@ -46,7 +50,7 @@ class OntologyAgent:
                 "content": (
                     "User question: "
                     f"{question}\n"
-                    "Explore the ontology before building SPARQL."
+                    "Read the semantic catalog before building SPARQL."
                 ),
             },
         ]
@@ -133,7 +137,7 @@ class OntologyAgent:
                 "content": (
                     "User question: "
                     f"{question}\n"
-                    "Explore the ontology before building SPARQL."
+                    "Read the semantic catalog before building SPARQL."
                 ),
             },
         ]

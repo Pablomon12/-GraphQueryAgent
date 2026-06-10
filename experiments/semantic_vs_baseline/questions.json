@@ -1,0 +1,121 @@
+{
+  "experiment_id": "semantic_agent_vs_base_model_vs_graphrag",
+  "description": "Comparison between the ontology tool-using agent, the same base model without tools, and an external GraphRAG service.",
+  "model_policy": {
+    "same_model": true,
+    "temperature": 0,
+    "baseline_access": "No ontology files, no SPARQL endpoint, no tool calls, no schema examples."
+  },
+  "systems": [
+    "semantic_agent",
+    "base_model",
+    "graph_rag"
+  ],
+  "repetitions_per_question_per_system": 3,
+  "questions": [
+    {
+      "id": "drug_type_distribution",
+      "test_type": "category_distribution",
+      "question": "¿Cuántos fármacos hay por cada tipo de fármaco?",
+      "primary_metric": "exact_match_by_category",
+      "metrics": [
+        "exact_accuracy",
+        "category_completeness",
+        "hallucination_count",
+        "traceability",
+        "latency_ms",
+        "steps"
+      ],
+      "expected": {
+        "Small molecule": 1440,
+        "Protein": 162,
+        "Antibody": 106,
+        "Unknown": 21,
+        "Oligonucleotide": 19,
+        "Antibody drug conjugate": 13,
+        "Gene": 10,
+        "Enzyme": 7,
+        "Oligosaccharide": 6,
+        "Cell": 2
+      },
+      "reference_sparql": "PREFIX : <https://example.org/farmacos-aprobados/ontology#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nSELECT ?type (COUNT(DISTINCT ?drug) AS ?n)\nWHERE {\n  ?drug a :Drug ;\n        :hasDrugType ?drug_type .\n  ?drug_type rdfs:label ?type .\n}\nGROUP BY ?type\nORDER BY DESC(?n)"
+    },
+    {
+      "id": "diabetes_mellitus_count",
+      "test_type": "numeric_count",
+      "question": "¿Cuántos fármacos están indicados para diabetes mellitus?",
+      "primary_metric": "exact_numeric_match",
+      "metrics": [
+        "exact_accuracy",
+        "hallucination_count",
+        "traceability",
+        "latency_ms",
+        "steps"
+      ],
+      "expected": {
+        "count": 63
+      },
+      "reference_sparql": "PREFIX : <https://example.org/farmacos-aprobados/ontology#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nSELECT (COUNT(DISTINCT ?drug) AS ?n)\nWHERE {\n  ?drug a :Drug ;\n        :hasIndication/rdfs:label ?indication .\n  FILTER(LCASE(STR(?indication)) = \"diabetes mellitus\")\n}"
+    },
+    {
+      "id": "abarelix_mechanism_target",
+      "test_type": "entity_attribute_extraction",
+      "question": "¿Qué mecanismo de acción y qué diana tiene ABARELIX?",
+      "primary_metric": "field_completeness_and_exact_match",
+      "metrics": [
+        "exact_accuracy",
+        "completeness",
+        "hallucination_count",
+        "traceability",
+        "latency_ms",
+        "steps"
+      ],
+      "expected": {
+        "drug": "ABARELIX",
+        "mechanism": "Gonadotropin-releasing hormone receptor antagonist",
+        "target": "GNRHR",
+        "approved_symbol": "GNRHR"
+      },
+      "reference_sparql": "PREFIX : <https://example.org/farmacos-aprobados/ontology#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nSELECT DISTINCT ?drug ?mechanism ?target ?approved_symbol\nWHERE {\n  ?drug_uri a :Drug ;\n            rdfs:label ?drug ;\n            :hasInteraction ?interaction .\n  FILTER(LCASE(STR(?drug)) = \"abarelix\")\n  OPTIONAL { ?interaction :hasMechanismOfAction/rdfs:label ?mechanism . }\n  OPTIONAL {\n    ?interaction :hasTarget ?target_uri .\n    ?target_uri rdfs:label ?target ;\n                :hasApprovedSymbol ?approved_symbol .\n  }\n}\nORDER BY ?mechanism ?target"
+    },
+    {
+      "id": "egfr_target_drugs",
+      "test_type": "entity_set_retrieval",
+      "question": "¿Qué fármacos tienen como target aprobado EGFR?",
+      "primary_metric": "entity_set_precision_recall_f1",
+      "metrics": [
+        "exact_accuracy",
+        "precision",
+        "recall",
+        "f1",
+        "hallucination_count",
+        "traceability",
+        "latency_ms",
+        "steps"
+      ],
+      "expected": {
+        "count": 17,
+        "entities": [
+          "AFATINIB DIMALEATE",
+          "AMIVANTAMAB",
+          "BRIGATINIB",
+          "CETUXIMAB",
+          "DACOMITINIB",
+          "ERLOTINIB HYDROCHLORIDE",
+          "GEFITINIB",
+          "LAPATINIB DITOSYLATE",
+          "MOBOCERTINIB",
+          "MOBOCERTINIB SUCCINATE",
+          "NECITUMUMAB",
+          "NERATINIB MALEATE",
+          "OLMUTINIB",
+          "OSIMERTINIB",
+          "OSIMERTINIB MESYLATE",
+          "PANITUMUMAB",
+          "VANDETANIB"
+        ]
+      },
+      "reference_sparql": "PREFIX : <https://example.org/farmacos-aprobados/ontology#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nSELECT DISTINCT ?drug\nWHERE {\n  ?drug_uri a :Drug ;\n            rdfs:label ?drug ;\n            :hasInteraction/:hasTarget ?target .\n  ?target :hasApprovedSymbol \"EGFR\" .\n}\nORDER BY ?drug"
+    }
+  ]
+}

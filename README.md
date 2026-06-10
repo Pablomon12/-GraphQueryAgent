@@ -193,6 +193,7 @@ curl -N -X POST http://127.0.0.1:8000/ask/stream \
 
 El backend instancia un `OntologyAgent` que trabaja con estas herramientas:
 
+- `read_semantic_catalog`
 - `get_schema_summary`
 - `list_ontology_files`
 - `list_prefixes`
@@ -207,10 +208,26 @@ El backend instancia un `OntologyAgent` que trabaja con estas herramientas:
 
 La ejecución está diseñada para:
 
-1. explorar primero el esquema y los datos disponibles
-2. construir una SPARQL de lectura
-3. ejecutar la consulta en Fuseki
-4. sintetizar una respuesta final y devolver trazabilidad
+1. consultar primero el catálogo semántico persistente
+2. usar herramientas RDF granulares solo si falta precisión o hay ambigüedad
+3. construir una SPARQL de lectura
+4. ejecutar la consulta en Fuseki como fuente factual final
+5. sintetizar una respuesta final y devolver trazabilidad
+
+## Catálogo semántico persistente
+
+El repositorio incluye un catálogo semántico versionado en `knowledge/catalog/`. Este catálogo está inspirado en una arquitectura de agente con capa semántica legible: el modelo consulta documentación estructurada antes de construir SPARQL, en vez de reconstruir siempre el esquema mediante muchas herramientas pequeñas.
+
+Archivos principales:
+
+- `knowledge/catalog/README.md`: guía de uso del catálogo.
+- `knowledge/catalog/overview.md`: resumen del dominio, tamaño del grafo y relaciones principales.
+- `knowledge/catalog/schema.md`: clases, propiedades, dominio/rango, conteos y ejemplos.
+- `knowledge/catalog/query_patterns.md`: patrones SPARQL recomendados.
+- `knowledge/catalog/entity_indexes.md`: entidades frecuentes y ejemplos experimentales.
+- `knowledge/catalog/catalog.json`: versión estructurada para lectura programática.
+
+El catálogo no se genera al arrancar la aplicación, el backend ni Docker Compose. Si cambian los RDF, debe actualizarse explícitamente. El catálogo es contexto operativo; la respuesta factual final debe seguir saliendo de `run_sparql`.
 
 ## Frontend
 
@@ -235,6 +252,7 @@ Cobertura actual relevante:
 
 - estado del endpoint `/health`
 - descubrimiento de clases, propiedades e individuos
+- catálogo semántico persistente y herramienta `read_semantic_catalog`
 - carga de variables desde `.env`
 - ejecución y streaming del agente
 - configuración de Fuseki
@@ -245,6 +263,16 @@ Cobertura actual relevante:
 cd frontend
 npm test
 ```
+
+## Experimento de evaluacion
+
+El protocolo para comparar el agente semantico contra el modelo base sin herramientas esta documentado en `docs/semantic_vs_baseline_experiment.md`.
+El protocolo tambien contempla un tercer sistema `graph_rag`, expuesto como API externa compatible con `README_GRAPHRAG.md` y configurado mediante `GRAPHRAG_API_BASE_URL`.
+
+Artefactos asociados:
+
+- `experiments/semantic_vs_baseline/questions.json`: preguntas, referencias y SPARQL de verdad de referencia.
+- `experiments/semantic_vs_baseline/results_template.csv`: plantilla para registrar las 36 ejecuciones del experimento.
 
 ## Desarrollo
 

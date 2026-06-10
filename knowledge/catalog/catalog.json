@@ -1,0 +1,230 @@
+{
+  "catalog_version": "1.0",
+  "reviewed_at": "2026-06-03",
+  "source_files": [
+    "knowledge/ontology/farmacos_aprobados.ttl",
+    "knowledge/data/farm_aprobados_inst.ttl",
+    "experiments/semantic_vs_baseline/questions.json"
+  ],
+  "purpose": "Persistent semantic catalog for the ontology agent. Use as operational context before generating SPARQL; final answers must be grounded in run_sparql results.",
+  "prefixes": {
+    "": "https://example.org/farmacos-aprobados/ontology#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "skos": "http://www.w3.org/2004/02/skos/core#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  },
+  "graph": {
+    "triples": 89434,
+    "class_counts": {
+      "Drug": 1786,
+      "DrugType": 10,
+      "TradeName": 7723,
+      "Indication": 796,
+      "Target": 890,
+      "TargetClass": 29,
+      "MechanismOfAction": 650,
+      "DrugTargetInteraction": 1786,
+      "DatasetRow": 1786
+    },
+    "property_counts": {
+      "hasDrugType": 1786,
+      "hasTradeName": 7802,
+      "hasIndication": 4959,
+      "hasInteraction": 1786,
+      "hasTarget": 4734,
+      "hasMechanismOfAction": 2359,
+      "hasTargetClass": 336,
+      "hasApprovedSymbol": 890
+    }
+  },
+  "classes": [
+    {
+      "qname": ":Drug",
+      "label": "Drug",
+      "count": 1786,
+      "description": "Approved drug or active substance identified by prefName."
+    },
+    {
+      "qname": ":DrugType",
+      "label": "DrugType",
+      "count": 10,
+      "description": "Nature of the drug, such as Small molecule or Protein."
+    },
+    {
+      "qname": ":TradeName",
+      "label": "TradeName",
+      "count": 7723,
+      "description": "Commercial or brand name associated with a drug."
+    },
+    {
+      "qname": ":Indication",
+      "label": "Indication",
+      "count": 796,
+      "description": "Therapeutic indication or approved use."
+    },
+    {
+      "qname": ":Target",
+      "label": "Target",
+      "count": 890,
+      "description": "Biological target referenced in the source dataset."
+    },
+    {
+      "qname": ":TargetClass",
+      "label": "TargetClass",
+      "count": 29,
+      "description": "Functional category assigned to a biological target."
+    },
+    {
+      "qname": ":MechanismOfAction",
+      "label": "MechanismOfAction",
+      "count": 650,
+      "description": "Mechanism of action asserted in the dataset."
+    },
+    {
+      "qname": ":DrugTargetInteraction",
+      "label": "DrugTargetInteraction",
+      "count": 1786,
+      "description": "Interaction assertion linking a drug with targets and mechanisms."
+    },
+    {
+      "qname": ":DatasetRow",
+      "label": "DatasetRow",
+      "count": 1786,
+      "description": "Source row from farmacos_aprobados.csv used for traceability."
+    }
+  ],
+  "core_properties": [
+    {
+      "qname": ":hasDrugType",
+      "domain": ":Drug",
+      "range": ":DrugType",
+      "count": 1786
+    },
+    {
+      "qname": ":hasTradeName",
+      "domain": ":Drug",
+      "range": ":TradeName",
+      "count": 7802
+    },
+    {
+      "qname": ":hasIndication",
+      "domain": ":Drug",
+      "range": ":Indication",
+      "count": 4959
+    },
+    {
+      "qname": ":hasInteraction",
+      "domain": ":Drug",
+      "range": ":DrugTargetInteraction",
+      "count": 1786
+    },
+    {
+      "qname": ":hasTarget",
+      "domain": ":DrugTargetInteraction",
+      "range": ":Target",
+      "count": 4734
+    },
+    {
+      "qname": ":hasMechanismOfAction",
+      "domain": ":DrugTargetInteraction",
+      "range": ":MechanismOfAction",
+      "count": 2359
+    },
+    {
+      "qname": ":hasTargetClass",
+      "domain": ":Target",
+      "range": ":TargetClass",
+      "count": 336
+    },
+    {
+      "qname": ":hasApprovedSymbol",
+      "domain": ":Target",
+      "range": "xsd:string",
+      "count": 890
+    }
+  ],
+  "frequent_values": {
+    "drug_types": {
+      "Small molecule": 1440,
+      "Protein": 162,
+      "Antibody": 106,
+      "Unknown": 21,
+      "Oligonucleotide": 19,
+      "Antibody drug conjugate": 13,
+      "Gene": 10,
+      "Enzyme": 7,
+      "Oligosaccharide": 6,
+      "Cell": 2
+    },
+    "indications": {
+      "neoplasm": 223,
+      "cardiovascular disease": 152,
+      "hypertension": 90,
+      "Pain": 85,
+      "diabetes mellitus": 63,
+      "rheumatoid arthritis": 54,
+      "allergic disease": 51,
+      "Recurrent thrombophlebitis": 49,
+      "asthma": 48,
+      "Airway obstruction": 46
+    },
+    "target_classes": {
+      "Enzyme": 100,
+      "Membrane receptor": 76,
+      "Secreted protein": 29,
+      "Unclassified protein": 28,
+      "Transporter": 17,
+      "Ion channel": 15
+    }
+  },
+  "experimental_entities": {
+    "ABARELIX": {
+      "type": "Drug",
+      "lookup": "FILTER(LCASE(STR(?drug)) = \"abarelix\")",
+      "expected_mechanism": "Gonadotropin-releasing hormone receptor antagonist",
+      "expected_target": "GNRHR",
+      "expected_approved_symbol": "GNRHR"
+    },
+    "diabetes mellitus": {
+      "type": "Indication",
+      "lookup": "FILTER(LCASE(STR(?indication)) = \"diabetes mellitus\")",
+      "expected_distinct_drug_count": 63
+    },
+    "EGFR": {
+      "type": "Target",
+      "lookup": "?target :hasApprovedSymbol \"EGFR\"",
+      "expected_distinct_drug_count": 17,
+      "expected_drugs": [
+        "AFATINIB DIMALEATE",
+        "AMIVANTAMAB",
+        "BRIGATINIB",
+        "CETUXIMAB",
+        "DACOMITINIB",
+        "ERLOTINIB HYDROCHLORIDE",
+        "GEFITINIB",
+        "LAPATINIB DITOSYLATE",
+        "MOBOCERTINIB",
+        "MOBOCERTINIB SUCCINATE",
+        "NECITUMUMAB",
+        "NERATINIB MALEATE",
+        "OLMUTINIB",
+        "OSIMERTINIB",
+        "OSIMERTINIB MESYLATE",
+        "PANITUMUMAB",
+        "VANDETANIB"
+      ]
+    }
+  },
+  "query_pattern_sections": [
+    "drug_type_distribution",
+    "indication_count",
+    "drug_mechanism_target",
+    "approved_target_to_drugs",
+    "trade_name_to_drug",
+    "drug_indications",
+    "target_alias_lookup",
+    "source_row_traceability"
+  ]
+}

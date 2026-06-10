@@ -4,7 +4,7 @@ from fastapi import FastAPI
 
 from ontology_agent.agent import OntologyAgent
 from ontology_agent.api.routes import create_router
-from ontology_agent.clients import LLMClient, SparqlClient
+from ontology_agent.clients import GraphRAGClient, LLMClient, SparqlClient
 from ontology_agent.config import Settings
 from ontology_agent.ontology import OntologyExplorer
 
@@ -15,6 +15,7 @@ ontology_explorer = OntologyExplorer(
 )
 llm_client = LLMClient(model=settings.openai_model)
 sparql_client = SparqlClient(query_endpoint=settings.fuseki_query_endpoint)
+graphrag_client = GraphRAGClient(base_url=settings.graphrag_api_base_url)
 agent = OntologyAgent(
     llm_client=llm_client,
     ontology_explorer=ontology_explorer,
@@ -28,5 +29,7 @@ app.include_router(
         agent=agent,
         ontology_explorer=ontology_explorer,
         settings=settings,
+        llm_client=llm_client,
+        graphrag_client=graphrag_client,
     )
 )
