@@ -1,17 +1,69 @@
+# Environment and secrets
 .env
+.env.*
+!.env.example
+!**/.env.example
+
+# Python
 .venv/
-.agents/
-.pytest_cache/
+venv/
 __pycache__/
 *.py[cod]
 *$py.class
-
-.DS_Store
-fuseki-data/
-
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+coverage.xml
+htmlcov/
 dist/
 build/
 *.egg-info/
-frontend/.next/
+pip-wheel-metadata/
+
+# Frontend / Next.js
 frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/dist/
 frontend/coverage/
+*.tsbuildinfo
+
+# Docker / local services
+fuseki-data/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Documentation and thesis artifacts
+docs/
+TFM_DOC*/
+README_GRAPHRAG.md
+*.docx
+*.pptx
+
+# Experiment outputs
+experiments/**/runs/
+
+# AI agent local state and generated artifacts
+AGENTS.md
+agents.md
+.agents/
+.codex/
+graphify-out/
+.docx_render/
+.aider*
+.claude/
+.continue/
+.cursor/
+.roo/
+.windsurf/
+ai-artifacts/
+ai-output/
+ai-generated/
+codex-output/
+codex-artifacts/
+skills-lock.json
