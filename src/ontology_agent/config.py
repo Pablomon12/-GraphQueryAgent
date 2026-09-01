@@ -4,6 +4,8 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
+LLM_PROVIDERS = ("openai", "huggingface")
+
 
 def load_dotenv_if_present(path: Path | None = None) -> None:
     env_path = path or Path(".env")
@@ -34,7 +36,10 @@ class Settings:
     ontology_glob: str
     fuseki_query_endpoint: str
     graphrag_api_base_url: str
+    default_llm_provider: str
     openai_model: str
+    hf_model: str
+    hf_base_url: str
     max_steps: int
 
     @classmethod
@@ -46,7 +51,12 @@ class Settings:
             "http://localhost:3030/dataset/query",
         )
         graphrag_api_base_url = os.getenv("GRAPHRAG_API_BASE_URL", "http://localhost:8001")
+        default_llm_provider = os.getenv("DEFAULT_LLM_PROVIDER", "openai").strip().lower()
+        if default_llm_provider not in LLM_PROVIDERS:
+            default_llm_provider = "openai"
         openai_model = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
+        hf_model = os.getenv("HF_MODEL", "Qwen/Qwen3-4B-Instruct-2507:nscale")
+        hf_base_url = os.getenv("HF_BASE_URL", "https://router.huggingface.co/v1")
         max_steps = int(os.getenv("AGENT_MAX_STEPS", "10"))
 
         return cls(
@@ -54,7 +64,10 @@ class Settings:
             ontology_glob=ontology_glob,
             fuseki_query_endpoint=fuseki_query_endpoint,
             graphrag_api_base_url=graphrag_api_base_url,
+            default_llm_provider=default_llm_provider,
             openai_model=openai_model,
+            hf_model=hf_model,
+            hf_base_url=hf_base_url,
             max_steps=max_steps,
         )
 
@@ -85,6 +98,13 @@ class Settings:
 
     def ontology_exists(self) -> bool:
         return any(path.exists() and path.is_dir() for path in self.ontology_paths)
+
+    def is_llm_provider_configured(self, provider: str) -> bool:
+        if provider == "openai":
+            return bool(os.getenv("OPENAI_API_KEY"))
+        if provider == "huggingface":
+            return bool(os.getenv("HF_TOKEN"))
+        return False
 
 
 load_dotenv_if_present()

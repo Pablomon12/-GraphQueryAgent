@@ -1,5 +1,8 @@
+export type LlmProvider = 'openai' | 'huggingface'
+
 export type AskRequest = {
   question: string
+  llm_provider?: LlmProvider
 }
 
 export type AskResponse = {
@@ -30,6 +33,13 @@ export type HealthResponse = {
   ontology_ready: boolean
   fuseki_query_endpoint: string
   graphrag_api_base_url: string
+  default_llm_provider: LlmProvider
+  llm_providers: {
+    id: LlmProvider
+    label: string
+    model: string
+    configured: boolean
+  }[]
   openai_model: string
 }
 

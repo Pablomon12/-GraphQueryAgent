@@ -16,6 +16,10 @@ export async function POST(request: NextRequest) {
     typeof payload === 'object' && payload !== null && 'question' in payload
       ? payload.question
       : null
+  const llmProvider =
+    typeof payload === 'object' && payload !== null && 'llm_provider' in payload
+      ? payload.llm_provider
+      : undefined
 
   if (typeof question !== 'string' || !question.trim()) {
     return NextResponse.json(
@@ -24,5 +28,19 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  return proxyBackendPost<AskResponse>('/ask', { question: question.trim() })
+  if (
+    llmProvider !== undefined &&
+    llmProvider !== 'openai' &&
+    llmProvider !== 'huggingface'
+  ) {
+    return NextResponse.json(
+      { detail: 'The llm_provider field must be openai or huggingface' },
+      { status: 400 },
+    )
+  }
+
+  return proxyBackendPost<AskResponse>('/ask', {
+    question: question.trim(),
+    ...(llmProvider ? { llm_provider: llmProvider } : {}),
+  })
 }

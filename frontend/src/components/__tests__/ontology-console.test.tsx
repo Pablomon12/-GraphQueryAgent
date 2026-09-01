@@ -20,6 +20,32 @@ function sseResponse(events: string[]): Response {
   })
 }
 
+function healthPayload(huggingFaceConfigured = false) {
+  return {
+    status: 'ok',
+    ontology_paths: ['knowledge/ontology', 'knowledge/data'],
+    ontology_ready: true,
+    fuseki_query_endpoint: 'http://localhost:3030/dataset/query',
+    graphrag_api_base_url: 'http://localhost:8001',
+    default_llm_provider: 'openai',
+    llm_providers: [
+      {
+        id: 'openai',
+        label: 'OpenAI',
+        model: 'gpt-4.1-mini',
+        configured: true,
+      },
+      {
+        id: 'huggingface',
+        label: 'Hugging Face',
+        model: 'Qwen/Qwen3-4B-Instruct-2507:nscale',
+        configured: huggingFaceConfigured,
+      },
+    ],
+    openai_model: 'gpt-4.1-mini',
+  }
+}
+
 describe('OntologyConsole', () => {
   afterEach(() => {
     vi.restoreAllMocks()
@@ -27,16 +53,7 @@ describe('OntologyConsole', () => {
 
   it('loads backend health on mount', async () => {
     vi.spyOn(global, 'fetch').mockResolvedValueOnce(
-      new Response(
-        JSON.stringify({
-          status: 'ok',
-          ontology_paths: ['knowledge/ontology', 'knowledge/data'],
-          ontology_ready: true,
-          fuseki_query_endpoint: 'http://localhost:3030/dataset/query',
-          graphrag_api_base_url: 'http://localhost:8001',
-          openai_model: 'gpt-4.1-mini',
-        }),
-      ),
+      new Response(JSON.stringify(healthPayload())),
     )
 
     render(<OntologyConsole />)
@@ -44,23 +61,14 @@ describe('OntologyConsole', () => {
     await waitFor(() => {
       expect(screen.getByText('Backend listo')).toBeInTheDocument()
     })
-    expect(screen.getByText('gpt-4.1-mini')).toBeInTheDocument()
+    expect(screen.getByText('OpenAI · gpt-4.1-mini')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'OpenAI' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Hugging Face' })).toBeDisabled()
   })
 
   it('renders response data after a successful question', async () => {
     vi.spyOn(global, 'fetch')
-      .mockResolvedValueOnce(
-        new Response(
-          JSON.stringify({
-            status: 'ok',
-            ontology_paths: ['knowledge/ontology', 'knowledge/data'],
-            ontology_ready: true,
-            fuseki_query_endpoint: 'http://localhost:3030/dataset/query',
-            graphrag_api_base_url: 'http://localhost:8001',
-            openai_model: 'gpt-4.1-mini',
-          }),
-        ),
-      )
+      .mockResolvedValueOnce(new Response(JSON.stringify(healthPayload())))
       .mockResolvedValueOnce(
         sseResponse([
           'event: answer_delta\ndata: {"type":"answer_delta","delta":"ABALOPARATIDE aparece ","step":4}\n\n',
@@ -98,16 +106,7 @@ describe('OntologyConsole', () => {
 
   it('shows an error when question is empty', async () => {
     vi.spyOn(global, 'fetch').mockResolvedValueOnce(
-      new Response(
-        JSON.stringify({
-          status: 'ok',
-          ontology_paths: ['knowledge/ontology', 'knowledge/data'],
-          ontology_ready: true,
-          fuseki_query_endpoint: 'http://localhost:3030/dataset/query',
-          graphrag_api_base_url: 'http://localhost:8001',
-          openai_model: 'gpt-4.1-mini',
-        }),
-      ),
+      new Response(JSON.stringify(healthPayload())),
     )
 
     render(<OntologyConsole />)
@@ -126,16 +125,7 @@ describe('OntologyConsole', () => {
 
   it('renders the comparison dashboard', async () => {
     vi.spyOn(global, 'fetch').mockResolvedValueOnce(
-      new Response(
-        JSON.stringify({
-          status: 'ok',
-          ontology_paths: ['knowledge/ontology', 'knowledge/data'],
-          ontology_ready: true,
-          fuseki_query_endpoint: 'http://localhost:3030/dataset/query',
-          graphrag_api_base_url: 'http://localhost:8001',
-          openai_model: 'gpt-4.1-mini',
-        }),
-      ),
+      new Response(JSON.stringify(healthPayload())),
     )
 
     render(<OntologyConsole />)
@@ -155,16 +145,7 @@ describe('OntologyConsole', () => {
 
   it('runs an experiment when loading a question', async () => {
     vi.spyOn(global, 'fetch').mockResolvedValueOnce(
-      new Response(
-        JSON.stringify({
-          status: 'ok',
-          ontology_paths: ['knowledge/ontology', 'knowledge/data'],
-          ontology_ready: true,
-          fuseki_query_endpoint: 'http://localhost:3030/dataset/query',
-          graphrag_api_base_url: 'http://localhost:8001',
-          openai_model: 'gpt-4.1-mini',
-        }),
-      ),
+      new Response(JSON.stringify(healthPayload())),
     ).mockResolvedValueOnce(
       sseResponse([
         'event: answer_delta\ndata: {"type":"answer_delta","delta":"ABARELIX tiene como mecanismo ","step":4}\n\n',
@@ -203,5 +184,42 @@ describe('OntologyConsole', () => {
         'GraphRAG recupera ABARELIX con mecanismo Gonadotropin-releasing hormone receptor antagonist y GNRHR.',
       ),
     ).toBeInTheDocument()
+  })
+
+  it('sends the selected Hugging Face provider with semantic and baseline requests', async () => {
+    const fetchMock = vi.spyOn(global, 'fetch')
+      .mockResolvedValueOnce(new Response(JSON.stringify(healthPayload(true))))
+      .mockResolvedValueOnce(
+        sseResponse([
+          'event: final\ndata: {"type":"final","payload":{"question":"¿Qué fármacos tienen como indicación osteoporosis?","sparql":null,"results":null,"answer":"Respuesta HF agente.","phases":[],"steps":1}}\n\n',
+        ]),
+      )
+      .mockResolvedValueOnce(
+        sseResponse([
+          'event: final\ndata: {"type":"final","payload":{"question":"¿Qué fármacos tienen como indicación osteoporosis?","answer":"Respuesta HF base.","steps":1}}\n\n',
+        ]),
+      )
+      .mockResolvedValueOnce(
+        sseResponse([
+          'event: final\ndata: {"type":"final","payload":{"question":"¿Qué fármacos tienen como indicación osteoporosis?","answer":"Respuesta GraphRAG.","results":null,"steps":1}}\n\n',
+        ]),
+      )
+
+    render(<OntologyConsole />)
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Hugging Face' })).toBeEnabled()
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Hugging Face' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Consultar' }))
+
+    await waitFor(() => {
+      expect(screen.getByText('Respuesta HF agente.')).toBeInTheDocument()
+    })
+
+    const semanticRequest = JSON.parse(String(fetchMock.mock.calls[1][1]?.body))
+    const baselineRequest = JSON.parse(String(fetchMock.mock.calls[2][1]?.body))
+    expect(semanticRequest.llm_provider).toBe('huggingface')
+    expect(baselineRequest.llm_provider).toBe('huggingface')
   })
 })

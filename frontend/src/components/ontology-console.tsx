@@ -10,6 +10,7 @@ import type {
   ErrorResponse,
   GraphRAGResponse,
   HealthResponse,
+  LlmProvider,
 } from "@/types/ontology";
 
 type LoadState = "idle" | "loading" | "success" | "error";
@@ -182,6 +183,21 @@ const SYSTEM_COMPARISON: SystemComparison[] = [
 ];
 
 const MANUAL_QUERY_RUN_ID = "manual_query";
+
+const DEFAULT_LLM_PROVIDERS: HealthResponse["llm_providers"] = [
+  {
+    id: "openai",
+    label: "OpenAI",
+    model: "gpt-4.1-mini",
+    configured: true,
+  },
+  {
+    id: "huggingface",
+    label: "Hugging Face",
+    model: "Qwen/Qwen3-4B-Instruct-2507:nscale",
+    configured: false,
+  },
+];
 
 const PHASE_LABELS: Record<string, string> = {
   llm_call: "Llamada al modelo",
@@ -468,12 +484,17 @@ export function OntologyConsole() {
   const [loadState, setLoadState] = useState<LoadState>("idle");
   const [health, setHealth] = useState<HealthResponse | null>(null);
   const [healthError, setHealthError] = useState<string | null>(null);
+  const [selectedLlmProvider, setSelectedLlmProvider] = useState<LlmProvider>("openai");
   const [result, setResult] = useState<AskResponse | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [experimentRuns, setExperimentRuns] = useState<Record<string, ExperimentRun>>({});
   const [selectedExperimentId, setSelectedExperimentId] = useState<string | null>(null);
   const [allExperimentsRunning, setAllExperimentsRunning] = useState(false);
   const backendReady = health?.status === "ok" && health?.ontology_ready;
+  const llmProviders = health?.llm_providers ?? DEFAULT_LLM_PROVIDERS;
+  const selectedProviderInfo =
+    llmProviders.find((provider) => provider.id === selectedLlmProvider) ??
+    llmProviders[0];
   const experimentSummary = summarizeExperimentRuns(experimentRuns);
   const manualRun = experimentRuns[MANUAL_QUERY_RUN_ID] ?? null;
   const manualSemantic = manualRun?.semanticAgent ?? (
@@ -497,7 +518,27 @@ export function OntologyConsole() {
         return;
       }
 
-      setHealth(payload as HealthResponse);
+      const healthPayload = payload as HealthResponse;
+      setHealth(healthPayload);
+      setSelectedLlmProvider((current) => {
+        const currentProvider = healthPayload.llm_providers.find(
+          (provider) => provider.id === current,
+        );
+        if (currentProvider?.configured) {
+          return current;
+        }
+
+        const defaultProvider = healthPayload.llm_providers.find(
+          (provider) => provider.id === healthPayload.default_llm_provider,
+        );
+        if (defaultProvider?.configured) {
+          return defaultProvider.id;
+        }
+
+        return (
+          healthPayload.llm_providers.find((provider) => provider.configured)?.id ?? "openai"
+        );
+      });
       setHealthError(null);
     } catch (error) {
       setHealthError(toErrorMessage(error));
@@ -533,6 +574,7 @@ export function OntologyConsole() {
     }));
 
     try {
+      const llmProvider = selectedLlmProvider;
       const semanticFinal: { value?: AskResponse } = {};
       let semanticFailed = false;
 
@@ -603,7 +645,11 @@ export function OntologyConsole() {
         });
       };
 
-      const semanticReader = await openStream("/api/ask/stream", trimmedQuestion);
+      const semanticReader = await openStream(
+        "/api/ask/stream",
+        trimmedQuestion,
+        llmProvider,
+      );
       await readStream<StreamEvent>(semanticReader, handleStreamEvent);
 
       if (!semanticFinal.value || semanticFailed) {
@@ -612,7 +658,11 @@ export function OntologyConsole() {
 
       try {
         const baseFinal: { value?: BaselineResponse } = {};
-        const baseReader = await openStream("/api/baseline/stream", trimmedQuestion);
+        const baseReader = await openStream(
+          "/api/baseline/stream",
+          trimmedQuestion,
+          llmProvider,
+        );
         await readStream<BaselineStreamEvent>(baseReader, (event) => {
           if (event.type === "answer_delta") {
             setExperimentRuns((current) => {
@@ -749,14 +799,17 @@ export function OntologyConsole() {
     }
   }
 
-  async function openStream(path: string, question: string) {
+  async function openStream(path: string, question: string, llmProvider?: LlmProvider) {
     const response = await fetch(path, {
       method: "POST",
       cache: "no-store",
       headers: {
         "content-type": "application/json",
       },
-      body: JSON.stringify({ question }),
+      body: JSON.stringify({
+        question,
+        ...(llmProvider ? { llm_provider: llmProvider } : {}),
+      }),
     });
 
     if (!response.ok || !response.body) {
@@ -822,11 +875,12 @@ export function OntologyConsole() {
     }));
 
     try {
+      const llmProvider = selectedLlmProvider;
       const semanticStartedAt = performance.now();
       const semanticFinal: { value?: AskResponse } = {};
       let semanticFailed = false;
 
-      const semanticReader = await openStream("/api/ask/stream", item.question);
+      const semanticReader = await openStream("/api/ask/stream", item.question, llmProvider);
       await readStream<StreamEvent>(semanticReader, (event) => {
         if (event.type === "answer_delta") {
           setResult((current) => ({
@@ -899,7 +953,11 @@ export function OntologyConsole() {
       const baseFinal: { value?: BaselineResponse } = {};
       let baseFailed = false;
 
-      const baseReader = await openStream("/api/baseline/stream", item.question);
+      const baseReader = await openStream(
+        "/api/baseline/stream",
+        item.question,
+        llmProvider,
+      );
       await readStream<BaselineStreamEvent>(baseReader, (event) => {
         if (event.type === "answer_delta") {
           setExperimentRuns((current) => {
@@ -1091,10 +1149,33 @@ export function OntologyConsole() {
             <h1>Evaluación de respuestas LLM apoyadas por grafos de conocimiento.</h1>
           </div>
           <div className="system-status" aria-label="Estado del backend">
+            <div className="provider-switch" aria-label="Proveedor LLM">
+              {llmProviders.map((provider) => (
+                <button
+                  aria-pressed={selectedLlmProvider === provider.id}
+                  className={
+                    selectedLlmProvider === provider.id
+                      ? "provider-option provider-option-active"
+                      : "provider-option"
+                  }
+                  disabled={!provider.configured || loadState === "loading"}
+                  key={provider.id}
+                  onClick={() => setSelectedLlmProvider(provider.id)}
+                  title={`${provider.label} · ${provider.model}`}
+                  type="button"
+                >
+                  {provider.label}
+                </button>
+              ))}
+            </div>
             <dl className="status-grid compact-status-grid">
               <div className="status-card">
                 <dt>Modelo</dt>
-                <dd>{health?.openai_model ?? "Unknown"}</dd>
+                <dd>
+                  {selectedProviderInfo
+                    ? `${selectedProviderInfo.label} · ${selectedProviderInfo.model}`
+                    : "Unknown"}
+                </dd>
               </div>
               <div className="status-card">
                 <dt>Fuseki</dt>

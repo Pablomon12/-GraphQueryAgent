@@ -15,10 +15,25 @@ export async function POST(request: NextRequest) {
     typeof payload === 'object' && payload !== null && 'question' in payload
       ? payload.question
       : null
+  const llmProvider =
+    typeof payload === 'object' && payload !== null && 'llm_provider' in payload
+      ? payload.llm_provider
+      : undefined
 
   if (typeof question !== 'string' || !question.trim()) {
     return NextResponse.json(
       { detail: 'The question field must be a non-empty string' },
+      { status: 400 },
+    )
+  }
+
+  if (
+    llmProvider !== undefined &&
+    llmProvider !== 'openai' &&
+    llmProvider !== 'huggingface'
+  ) {
+    return NextResponse.json(
+      { detail: 'The llm_provider field must be openai or huggingface' },
       { status: 400 },
     )
   }
@@ -31,7 +46,10 @@ export async function POST(request: NextRequest) {
         accept: 'text/event-stream',
         'content-type': 'application/json',
       },
-      body: JSON.stringify({ question: question.trim() }),
+      body: JSON.stringify({
+        question: question.trim(),
+        ...(llmProvider ? { llm_provider: llmProvider } : {}),
+      }),
     })
 
     if (!response.body) {

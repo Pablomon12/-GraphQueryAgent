@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Iterator
+from collections.abc import Iterator, Mapping
 from typing import Any
 
 from fastapi import APIRouter, HTTPException
@@ -17,18 +17,26 @@ from ontology_agent.schemas import (
     BaselineResponse,
     GraphRAGResponse,
     HealthResponse,
+    LLMProviderInfo,
 )
 
 
 def create_router(
     *,
     agent: OntologyAgent,
+    agents: Mapping[str, OntologyAgent] | None = None,
     ontology_explorer: OntologyExplorer,
     settings: Settings,
     llm_client: LLMClient | None = None,
+    llm_clients: Mapping[str, LLMClient] | None = None,
     graphrag_client: GraphRAGClient | None = None,
 ) -> APIRouter:
     router = APIRouter()
+    agent_by_provider = dict(agents or {})
+    agent_by_provider.setdefault(settings.default_llm_provider, agent)
+    llm_client_by_provider = dict(llm_clients or {})
+    if llm_client is not None:
+        llm_client_by_provider.setdefault(settings.default_llm_provider, llm_client)
 
     @router.get("/health", response_model=HealthResponse)
     def health() -> HealthResponse:
@@ -38,13 +46,20 @@ def create_router(
             ontology_ready=bool(ontology_explorer.list_ontology_files()),
             fuseki_query_endpoint=settings.fuseki_query_endpoint,
             graphrag_api_base_url=settings.graphrag_api_base_url,
+            default_llm_provider=settings.default_llm_provider,  # type: ignore[arg-type]
+            llm_providers=_llm_provider_info(settings),
             openai_model=settings.openai_model,
         )
 
     @router.post("/ask", response_model=AskResponse)
     def ask(request: AskRequest) -> AskResponse:
+        selected_agent = _select_agent(
+            request.llm_provider,
+            settings=settings,
+            agent_by_provider=agent_by_provider,
+        )
         try:
-            result = agent.ask(request.question)
+            result = selected_agent.ask(request.question)
         except FileNotFoundError as exc:
             raise HTTPException(status_code=500, detail=str(exc)) from exc
         except Exception as exc:
@@ -54,13 +69,16 @@ def create_router(
 
     @router.post("/baseline", response_model=BaselineResponse)
     def baseline(request: AskRequest) -> BaselineResponse:
-        if llm_client is None:
-            raise HTTPException(status_code=503, detail="Baseline model is not configured")
+        selected_llm_client = _select_llm_client(
+            request.llm_provider,
+            settings=settings,
+            llm_client_by_provider=llm_client_by_provider,
+        )
 
         messages = _baseline_messages(request.question)
 
         try:
-            raw_response = llm_client.call(messages)
+            raw_response = selected_llm_client.call(messages)
             payload = _parse_json_object(raw_response)
         except Exception as exc:
             raise HTTPException(status_code=500, detail=f"Baseline execution failed: {exc}") from exc
@@ -123,8 +141,14 @@ def create_router(
     @router.post("/baseline/stream")
     def baseline_stream(request: AskRequest) -> StreamingResponse:
         def event_stream() -> Iterator[str]:
-            if llm_client is None:
-                yield _sse_error("Baseline model is not configured")
+            try:
+                selected_llm_client = _select_llm_client(
+                    request.llm_provider,
+                    settings=settings,
+                    llm_client_by_provider=llm_client_by_provider,
+                )
+            except HTTPException as exc:
+                yield _sse_error(str(exc.detail))
                 return
 
             messages = _baseline_messages(request.question)
@@ -132,8 +156,12 @@ def create_router(
             streamed_answer = ""
 
             try:
-                stream = getattr(llm_client, "stream", None)
-                chunks = stream(messages) if callable(stream) else [llm_client.call(messages)]
+                stream = getattr(selected_llm_client, "stream", None)
+                chunks = (
+                    stream(messages)
+                    if callable(stream)
+                    else [selected_llm_client.call(messages)]
+                )
 
                 for chunk in chunks:
                     raw_response += chunk
@@ -195,7 +223,17 @@ def create_router(
     def ask_stream(request: AskRequest) -> StreamingResponse:
         def event_stream() -> Iterator[str]:
             try:
-                for event in agent.ask_stream(request.question):
+                selected_agent = _select_agent(
+                    request.llm_provider,
+                    settings=settings,
+                    agent_by_provider=agent_by_provider,
+                )
+            except HTTPException as exc:
+                yield _sse_error(str(exc.detail))
+                return
+
+            try:
+                for event in selected_agent.ask_stream(request.question):
                     event_type = str(event.get("type", "message"))
                     yield (
                         f"event: {event_type}\n"
@@ -216,6 +254,55 @@ def create_router(
         )
 
     return router
+
+
+def _llm_provider_info(settings: Settings) -> list[LLMProviderInfo]:
+    return [
+        LLMProviderInfo(
+            id="openai",
+            label="OpenAI",
+            model=settings.openai_model,
+            configured=settings.is_llm_provider_configured("openai"),
+        ),
+        LLMProviderInfo(
+            id="huggingface",
+            label="Hugging Face",
+            model=settings.hf_model,
+            configured=settings.is_llm_provider_configured("huggingface"),
+        ),
+    ]
+
+
+def _select_agent(
+    provider: str,
+    *,
+    settings: Settings,
+    agent_by_provider: Mapping[str, OntologyAgent],
+) -> OntologyAgent:
+    if provider == "huggingface" and not settings.is_llm_provider_configured(provider):
+        raise HTTPException(status_code=503, detail="Hugging Face model is not configured")
+
+    selected_agent = agent_by_provider.get(provider)
+    if selected_agent is None:
+        raise HTTPException(status_code=503, detail=f"Agent provider '{provider}' is not configured")
+
+    return selected_agent
+
+
+def _select_llm_client(
+    provider: str,
+    *,
+    settings: Settings,
+    llm_client_by_provider: Mapping[str, LLMClient],
+) -> LLMClient:
+    if provider == "huggingface" and not settings.is_llm_provider_configured(provider):
+        raise HTTPException(status_code=503, detail="Hugging Face model is not configured")
+
+    selected_llm_client = llm_client_by_provider.get(provider)
+    if selected_llm_client is None:
+        raise HTTPException(status_code=503, detail=f"Baseline provider '{provider}' is not configured")
+
+    return selected_llm_client
 
 
 def _sse_error(detail: str) -> str:

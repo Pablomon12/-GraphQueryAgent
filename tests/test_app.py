@@ -25,6 +25,11 @@ def test_health_endpoint_reports_ready_ontology() -> None:
     assert payload["status"] == "ok"
     assert payload["ontology_ready"] is True
     assert payload["ontology_paths"] == [str(path) for path in settings.ontology_paths]
+    assert payload["default_llm_provider"] in {"openai", "huggingface"}
+    assert {provider["id"] for provider in payload["llm_providers"]} == {
+        "openai",
+        "huggingface",
+    }
 
 
 def test_ontology_explorer_discovers_files_and_schema() -> None:
@@ -158,6 +163,38 @@ class _FakeStreamingAgent:
                 "results": {"ok": True},
                 "answer": f"Respuesta a {question}",
                 "phases": ["reporting"],
+                "steps": 1,
+            },
+        }
+
+
+class _FakeProviderAgent:
+    def __init__(self, provider: str) -> None:
+        self.provider = provider
+        self.questions: list[str] = []
+
+    def ask(self, question: str) -> dict[str, object]:
+        self.questions.append(question)
+        return {
+            "question": question,
+            "sparql": None,
+            "results": None,
+            "answer": f"Respuesta {self.provider}",
+            "phases": [],
+            "steps": 1,
+        }
+
+    def ask_stream(self, question: str):
+        self.questions.append(question)
+        yield {"type": "answer_delta", "delta": f"Respuesta {self.provider}", "step": 1}
+        yield {
+            "type": "final",
+            "payload": {
+                "question": question,
+                "sparql": None,
+                "results": None,
+                "answer": f"Respuesta {self.provider}",
+                "phases": [],
                 "steps": 1,
             },
         }
@@ -317,6 +354,151 @@ def test_baseline_stream_endpoint_returns_answer_deltas() -> None:
     assert "event: answer_delta" in body
     assert "event: final" in body
     assert '"answer": "Respuesta del modelo base."' in body
+
+
+def test_settings_support_llm_provider_configuration(monkeypatch) -> None:
+    monkeypatch.setenv("DEFAULT_LLM_PROVIDER", "huggingface")
+    monkeypatch.setenv("HF_MODEL", "Qwen/Qwen3-4B-Instruct-2507:nscale")
+    monkeypatch.setenv("HF_BASE_URL", "https://router.huggingface.co/v1")
+
+    provider_settings = Settings.from_env()
+
+    assert provider_settings.default_llm_provider == "huggingface"
+    assert provider_settings.hf_model == "Qwen/Qwen3-4B-Instruct-2507:nscale"
+    assert provider_settings.hf_base_url == "https://router.huggingface.co/v1"
+
+
+def test_health_endpoint_reports_llm_providers(monkeypatch) -> None:
+    monkeypatch.setenv("OPENAI_API_KEY", "openai-test")
+    monkeypatch.setenv("HF_TOKEN", "hf-test")
+    test_app = FastAPI()
+    explorer = OntologyExplorer((Path("knowledge/ontology"), Path("knowledge/data")))
+    provider_settings = Settings.from_env()
+    test_app.include_router(
+        create_router(
+            agent=_FakeStreamingAgent(),  # type: ignore[arg-type]
+            ontology_explorer=explorer,
+            settings=provider_settings,
+        )
+    )
+    client = TestClient(test_app)
+
+    response = client.get("/health")
+
+    assert response.status_code == 200
+    providers = {provider["id"]: provider for provider in response.json()["llm_providers"]}
+    assert providers["openai"]["configured"] is True
+    assert providers["huggingface"]["configured"] is True
+    assert providers["huggingface"]["model"] == "Qwen/Qwen3-4B-Instruct-2507:nscale"
+
+
+def test_ask_endpoint_uses_selected_huggingface_agent(monkeypatch) -> None:
+    monkeypatch.setenv("HF_TOKEN", "hf-test")
+    test_app = FastAPI()
+    explorer = OntologyExplorer((Path("knowledge/ontology"), Path("knowledge/data")))
+    openai_agent = _FakeProviderAgent("openai")
+    hf_agent = _FakeProviderAgent("huggingface")
+    test_app.include_router(
+        create_router(
+            agent=openai_agent,  # type: ignore[arg-type]
+            agents={"openai": openai_agent, "huggingface": hf_agent},  # type: ignore[dict-item]
+            ontology_explorer=explorer,
+            settings=Settings.from_env(),
+        )
+    )
+    client = TestClient(test_app)
+
+    response = client.post(
+        "/ask",
+        json={"question": "Pregunta literal", "llm_provider": "huggingface"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["answer"] == "Respuesta huggingface"
+    assert hf_agent.questions == ["Pregunta literal"]
+    assert openai_agent.questions == []
+
+
+def test_baseline_endpoint_uses_selected_huggingface_client(monkeypatch) -> None:
+    monkeypatch.setenv("HF_TOKEN", "hf-test")
+    test_app = FastAPI()
+    explorer = OntologyExplorer((Path("knowledge/ontology"), Path("knowledge/data")))
+    openai_llm = _FakeLLMClient(['{"answer":"Respuesta OpenAI."}'])
+    hf_llm = _FakeLLMClient(['{"answer":"Respuesta HF."}'])
+    test_app.include_router(
+        create_router(
+            agent=_FakeStreamingAgent(),  # type: ignore[arg-type]
+            ontology_explorer=explorer,
+            settings=Settings.from_env(),
+            llm_client=openai_llm,  # type: ignore[arg-type]
+            llm_clients={"openai": openai_llm, "huggingface": hf_llm},  # type: ignore[dict-item]
+        )
+    )
+    client = TestClient(test_app)
+
+    response = client.post(
+        "/baseline",
+        json={"question": "Pregunta literal", "llm_provider": "huggingface"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["answer"] == "Respuesta HF."
+    assert hf_llm.calls != []
+    assert openai_llm.calls == []
+
+
+def test_huggingface_provider_requires_token(monkeypatch) -> None:
+    monkeypatch.delenv("HF_TOKEN", raising=False)
+    test_app = FastAPI()
+    explorer = OntologyExplorer((Path("knowledge/ontology"), Path("knowledge/data")))
+    hf_agent = _FakeProviderAgent("huggingface")
+    test_app.include_router(
+        create_router(
+            agent=_FakeStreamingAgent(),  # type: ignore[arg-type]
+            agents={"huggingface": hf_agent},  # type: ignore[dict-item]
+            ontology_explorer=explorer,
+            settings=Settings.from_env(),
+        )
+    )
+    client = TestClient(test_app)
+
+    response = client.post(
+        "/ask",
+        json={"question": "Pregunta literal", "llm_provider": "huggingface"},
+    )
+
+    assert response.status_code == 503
+    assert response.json()["detail"] == "Hugging Face model is not configured"
+    assert hf_agent.questions == []
+
+
+def test_huggingface_stream_endpoint_preserves_sse(monkeypatch) -> None:
+    monkeypatch.setenv("HF_TOKEN", "hf-test")
+    test_app = FastAPI()
+    explorer = OntologyExplorer((Path("knowledge/ontology"), Path("knowledge/data")))
+    hf_agent = _FakeProviderAgent("huggingface")
+    test_app.include_router(
+        create_router(
+            agent=_FakeStreamingAgent(),  # type: ignore[arg-type]
+            agents={"huggingface": hf_agent},  # type: ignore[dict-item]
+            ontology_explorer=explorer,
+            settings=Settings.from_env(),
+        )
+    )
+    client = TestClient(test_app)
+
+    with client.stream(
+        "POST",
+        "/ask/stream",
+        json={"question": "Pregunta literal", "llm_provider": "huggingface"},
+    ) as response:
+        body = response.read().decode()
+
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/event-stream")
+    assert "event: answer_delta" in body
+    assert "event: final" in body
+    assert '"answer": "Respuesta huggingface"' in body
 
 
 def test_graphrag_endpoint_proxies_external_service() -> None:
