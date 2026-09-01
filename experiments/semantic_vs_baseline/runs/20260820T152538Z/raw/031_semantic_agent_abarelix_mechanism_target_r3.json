@@ -1,0 +1,35 @@
+{
+  "run_id": 31,
+  "system": "semantic_agent",
+  "question_id": "abarelix_mechanism_target",
+  "repetition": 3,
+  "question": "¿Qué mecanismo de acción y qué diana tiene ABARELIX?",
+  "started_at": "2026-08-20T15:28:29+00:00",
+  "finished_at": "2026-08-20T15:28:39+00:00",
+  "latency_ms": 10419,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "question": "¿Qué mecanismo de acción y qué diana tiene ABARELIX?",
+    "sparql": "PREFIX : <https://example.org/farmacos-aprobados/ontology#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n\nSELECT DISTINCT ?drug ?mechanism ?target ?approved_symbol\nWHERE {\n  ?drug_uri a :Drug ;\n            rdfs:label ?drug ;\n            :hasInteraction ?interaction .\n  FILTER(LCASE(STR(?drug)) = \"abarelix\")\n  OPTIONAL { ?interaction :hasMechanismOfAction/rdfs:label ?mechanism . }\n  OPTIONAL {\n    ?interaction :hasTarget ?target_uri .\n    ?target_uri rdfs:label ?target ;\n                :hasApprovedSymbol ?approved_symbol .\n  }\n}\nORDER BY ?mechanism ?target\n",
+    "results": {
+      "bindings": [
+        {
+          "drug": "ABARELIX",
+          "mechanism": "Gonadotropin-releasing hormone receptor antagonist",
+          "target": "GNRHR",
+          "approved_symbol": "GNRHR"
+        }
+      ]
+    },
+    "answer": "El fármaco ABARELIX tiene como mecanismo de acción un antagonista del receptor de la hormona liberadora de gonadotropina (Gonadotropin-releasing hormone receptor antagonist) y su diana biológica aprobada es el receptor GNRHR.",
+    "phases": [
+      "planning",
+      "schema_discovery",
+      "execution",
+      "reporting"
+    ],
+    "steps": 4
+  },
+  "error": ""
+}

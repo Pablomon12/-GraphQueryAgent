@@ -1,0 +1,18 @@
+{
+  "run_id": 25,
+  "system": "base_model",
+  "question_id": "drug_type_distribution",
+  "repetition": 3,
+  "question": "¿Cuántos fármacos hay por cada tipo de fármaco?",
+  "started_at": "2026-08-20T15:27:59+00:00",
+  "finished_at": "2026-08-20T15:28:00+00:00",
+  "latency_ms": 1083,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "question": "¿Cuántos fármacos hay por cada tipo de fármaco?",
+    "answer": "No se ha proporcionado información específica sobre los tipos de fármacos ni la cantidad de fármacos por tipo. Por favor, proporciona más detalles o datos para poder responder con precisión.",
+    "steps": 1
+  },
+  "error": ""
+}

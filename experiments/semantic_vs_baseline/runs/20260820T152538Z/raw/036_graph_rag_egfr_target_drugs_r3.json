@@ -1,0 +1,307 @@
+{
+  "run_id": 36,
+  "system": "graph_rag",
+  "question_id": "egfr_target_drugs",
+  "repetition": 3,
+  "question": "¿Qué fármacos tienen como target aprobado EGFR?",
+  "started_at": "2026-08-20T15:29:00+00:00",
+  "finished_at": "2026-08-20T15:29:07+00:00",
+  "latency_ms": 6689,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "question": "¿Qué fármacos tienen como target aprobado EGFR?",
+    "answer": "Los fármacos que tienen como target aprobado EGFR (Epidermal growth factor receptor) son:\n\n1. CETUXIMAB (nombre comercial: Erbitux) - Anticuerpo que actúa como inhibidor del receptor del factor de crecimiento epidérmico erbB1. Indicaciones incluyen adenocarcinoma colorrectal, neoplasias malignas de cabeza y cuello, carcinoma de células escamosas, entre otras.\n\n2. ERLOTINIB HYDROCHLORIDE (nombres comerciales: Erlotinib hydrochloride, Tarceva) - Molécula pequeña que inhibe el receptor del factor de crecimiento epidérmico erbB1. Indicada para carcinoma de pulmón no microcítico.\n\n3. GEFITINIB (nombres comerciales: Iressa, Gefitinib mylan) - Molécula pequeña inhibidora del receptor del factor de crecimiento epidérmico erbB1. Indicada para neoplasias y carcinoma de pulmón no microcítico.\n\n4. AFATINIB DIMALEATE (nombres comerciales: Giotrif, Gilotrif) - Molécula pequeña que inhibe el receptor del factor de crecimiento epidérmico erbB1, así como los receptores erbB-2 y erbB-4. Indicada para carcinoma de pulmón no microcítico.\n\nEstos fármacos comparten el mecanismo de acción de inhibir el receptor EGFR.",
+    "results": [
+      {
+        "score": 0.7988359928131104,
+        "drug": "CETUXIMAB",
+        "trade_names": [
+          "Erbitux"
+        ],
+        "drug_types": [
+          "Antibody"
+        ],
+        "indications": [
+          "malignant tumor of neck",
+          "head and neck malignant neoplasia",
+          "squamous cell carcinoma",
+          "head and neck neoplasia",
+          "upper aerodigestive tract neoplasm",
+          "colorectal neoplasm",
+          "neoplasm",
+          "colorectal adenocarcinoma"
+        ],
+        "targets": [
+          {
+            "name": "Angiopoietin-1 receptor",
+            "symbol": "EGFR"
+          }
+        ],
+        "target_classes": [
+          "Secreted protein",
+          "Membrane receptor",
+          "Other nuclear protein",
+          "Enzyme",
+          "Unclassified protein"
+        ],
+        "mechanisms": [
+          "Epidermal growth factor receptor erbB1 inhibitor"
+        ],
+        "evidence_rows": [
+          {
+            "raw_json": "{\"approvedSymbol\": \"EGFR\", \"drugType\": \"Antibody\", \"label\": \"colorectal adenocarcinoma, colorectal neoplasm, head and neck malignant neoplasia, head and neck neoplasia, malignant tumor of neck, neoplasm, squamous cell carcinoma, upper aerodigestive tract neoplasm\", \"mechanismOfAction\": \"Epidermal growth factor receptor erbB1 inhibitor\", \"prefName\": \"CETUXIMAB\", \"targetClass\": \"Enzyme, Unclassified protein\", \"targetName\": \"Epidermal growth factor receptor\", \"tradeNames\": \"['Erbitux']\"}",
+            "source_row": 315,
+            "source_file": "farmacos_aprobados.csv"
+          }
+        ]
+      },
+      {
+        "score": 0.7973239421844482,
+        "drug": "REGORAFENIB",
+        "trade_names": [
+          "Stivarga"
+        ],
+        "drug_types": [
+          "Small molecule"
+        ],
+        "indications": [
+          "colorectal cancer",
+          "neoplasm",
+          "colorectal neoplasm"
+        ],
+        "targets": [
+          {
+            "name": "Ephrin type-A receptor 2",
+            "symbol": "DDR2"
+          },
+          {
+            "name": "PDGFRA",
+            "symbol": "PDGFRA"
+          },
+          {
+            "name": "KDR",
+            "symbol": "KDR"
+          },
+          {
+            "name": "Serine/threonine-protein kinase B-raf",
+            "symbol": "BRAF"
+          },
+          {
+            "name": "FLT1",
+            "symbol": "FLT1"
+          },
+          {
+            "name": "Casein kinase I isoform epsilon",
+            "symbol": "ABL1"
+          },
+          {
+            "name": "Platelet-derived growth factor receptor",
+            "symbol": "FRK"
+          },
+          {
+            "name": "High affinity nerve growth factor receptor",
+            "symbol": "FGFR2"
+          },
+          {
+            "name": "KIT",
+            "symbol": "KIT"
+          },
+          {
+            "name": "FLT4",
+            "symbol": "FLT4"
+          },
+          {
+            "name": "RET",
+            "symbol": "RET"
+          },
+          {
+            "name": "PDGFRB",
+            "symbol": "PDGFRB"
+          },
+          {
+            "name": "TEK",
+            "symbol": "TEK"
+          },
+          {
+            "name": "RAF1",
+            "symbol": "RAF1"
+          },
+          {
+            "name": "Tyrosine-protein kinase ABL1",
+            "symbol": "NTRK1"
+          },
+          {
+            "name": "Fibroblast growth factor receptor 2",
+            "symbol": "FGFR1"
+          },
+          {
+            "name": "Serine/threonine-protein kinase B-raf",
+            "symbol": "MAPK11"
+          },
+          {
+            "name": "Protein-tyrosine kinase 6",
+            "symbol": "EPHA2"
+          }
+        ],
+        "target_classes": [
+          "Secreted protein",
+          "Unclassified protein",
+          "Other cytosolic protein",
+          "Enzyme",
+          "Membrane receptor",
+          "Other nuclear protein"
+        ],
+        "mechanisms": [
+          "Stem cell growth factor receptor inhibitor",
+          "Fibroblast growth factor receptor 2 inhibitor",
+          "Discoidin domain-containing receptor 2 inhibitor",
+          "Ephrin type-A receptor 2 inhibitor",
+          "Nerve growth factor receptor Trk-A inhibitor",
+          "Platelet-derived growth factor receptor inhibitor",
+          "Tyrosine-protein kinase FRK inhibitor",
+          "Vascular endothelial growth factor receptor inhibitor",
+          "Fibroblast growth factor receptor 1 inhibitor",
+          "Serine/threonine-protein kinase RAF inhibitor",
+          "Serine/threonine-protein kinase B-raf inhibitor",
+          "Tyrosine-protein kinase TIE-2 inhibitor",
+          "Tyrosine-protein kinase receptor RET inhibitor",
+          "MAP kinase p38 beta inhibitor",
+          "Tyrosine-protein kinase ABL inhibitor"
+        ],
+        "evidence_rows": [
+          {
+            "raw_json": "{\"approvedSymbol\": \"ABL1, BRAF, DDR2, EPHA2, FGFR1, FGFR2, FLT1, FLT4, FRK, KDR, KIT, MAPK11, NTRK1, PDGFRA, PDGFRB, RAF1, RET, TEK\", \"drugType\": \"Small molecule\", \"label\": \"colorectal cancer, colorectal neoplasm, neoplasm\", \"mechanismOfAction\": \"Discoidin domain-containing receptor 2 inhibitor, Ephrin type-A receptor 2 inhibitor, Fibroblast growth factor receptor 1 inhibitor, Fibroblast growth factor receptor 2 inhibitor, MAP kinase p38 beta inhibitor, Nerve growth factor receptor Trk-A inhibitor, Platelet-derived growth factor receptor inhibitor, Serine/threonine-protein kinase B-raf inhibitor, Serine/threonine-protein kinase RAF inhibitor, Stem cell growth factor receptor inhibitor, Tyrosine-protein kinase ABL inhibitor, Tyrosine-protein kinase FRK inhibitor, Tyrosine-protein kinase TIE-2 inhibitor, Tyrosine-protein kinase receptor RET inhibitor, Vascular endothelial growth factor receptor inhibitor\", \"prefName\": \"REGORAFENIB\", \"targetClass\": \"Enzyme, Other cytosolic protein, Secreted protein, Unclassified protein\", \"targetName\": \"Angiopoietin-1 receptor, Discoidin domain-containing receptor 2, Ephrin type-A receptor 2, Fibroblast growth factor receptor 1, Fibroblast growth factor receptor 2, High affinity nerve growth factor receptor, Mast/stem cell growth factor receptor Kit, Mitogen-activated protein kinase 11, Platelet-derived growth factor receptor, Proto-oncogene tyrosine-protein kinase receptor Ret, RAF proto-oncogene serine/threonine-protein kinase, Serine/threonine-protein kinase B-raf, Tyrosine-protein kinase ABL1, Tyrosine-protein kinase FRK, Vascular endothelial growth factor receptor\", \"tradeNames\": \"['Stivarga']\"}",
+            "source_row": 1414,
+            "source_file": "farmacos_aprobados.csv"
+          }
+        ]
+      },
+      {
+        "score": 0.7932636737823486,
+        "drug": "ERLOTINIB HYDROCHLORIDE",
+        "trade_names": [
+          "Erlotinib hydrochloride",
+          "Tarceva"
+        ],
+        "drug_types": [
+          "Small molecule"
+        ],
+        "indications": [
+          "non-small cell lung carcinoma"
+        ],
+        "targets": [
+          {
+            "name": "Angiopoietin-1 receptor",
+            "symbol": "EGFR"
+          }
+        ],
+        "target_classes": [
+          "Secreted protein",
+          "Membrane receptor",
+          "Other nuclear protein",
+          "Enzyme",
+          "Unclassified protein"
+        ],
+        "mechanisms": [
+          "Epidermal growth factor receptor erbB1 inhibitor"
+        ],
+        "evidence_rows": [
+          {
+            "raw_json": "{\"approvedSymbol\": \"EGFR\", \"drugType\": \"Small molecule\", \"label\": \"non-small cell lung carcinoma\", \"mechanismOfAction\": \"Epidermal growth factor receptor erbB1 inhibitor\", \"prefName\": \"ERLOTINIB HYDROCHLORIDE\", \"targetClass\": \"Enzyme, Unclassified protein\", \"targetName\": \"Epidermal growth factor receptor\", \"tradeNames\": \"['Erlotinib hydrochloride' 'Tarceva']\"}",
+            "source_row": 617,
+            "source_file": "farmacos_aprobados.csv"
+          }
+        ]
+      },
+      {
+        "score": 0.7929072380065918,
+        "drug": "GEFITINIB",
+        "trade_names": [
+          "Iressa",
+          "Gefitinib mylan"
+        ],
+        "drug_types": [
+          "Small molecule"
+        ],
+        "indications": [
+          "neoplasm",
+          "non-small cell lung carcinoma"
+        ],
+        "targets": [
+          {
+            "name": "Angiopoietin-1 receptor",
+            "symbol": "EGFR"
+          }
+        ],
+        "target_classes": [
+          "Secreted protein",
+          "Membrane receptor",
+          "Other nuclear protein",
+          "Enzyme",
+          "Unclassified protein"
+        ],
+        "mechanisms": [
+          "Epidermal growth factor receptor erbB1 inhibitor"
+        ],
+        "evidence_rows": [
+          {
+            "raw_json": "{\"approvedSymbol\": \"EGFR\", \"drugType\": \"Small molecule\", \"label\": \"neoplasm, non-small cell lung carcinoma\", \"mechanismOfAction\": \"Epidermal growth factor receptor erbB1 inhibitor\", \"prefName\": \"GEFITINIB\", \"targetClass\": \"Enzyme, Unclassified protein\", \"targetName\": \"Epidermal growth factor receptor\", \"tradeNames\": \"['Gefitinib mylan' 'Iressa']\"}",
+            "source_row": 745,
+            "source_file": "farmacos_aprobados.csv"
+          }
+        ]
+      },
+      {
+        "score": 0.7871415615081787,
+        "drug": "AFATINIB DIMALEATE",
+        "trade_names": [
+          "Giotrif",
+          "Gilotrif"
+        ],
+        "drug_types": [
+          "Small molecule"
+        ],
+        "indications": [
+          "non-small cell lung carcinoma"
+        ],
+        "targets": [
+          {
+            "name": "ERBB4",
+            "symbol": "ERBB4"
+          },
+          {
+            "name": "ERBB2",
+            "symbol": "ERBB2"
+          },
+          {
+            "name": "Angiopoietin-1 receptor",
+            "symbol": "EGFR"
+          }
+        ],
+        "target_classes": [
+          "Secreted protein",
+          "Membrane receptor",
+          "Enzyme",
+          "Unclassified protein",
+          "Structural protein",
+          "Other nuclear protein"
+        ],
+        "mechanisms": [
+          "Receptor protein-tyrosine kinase erbB-4 inhibitor",
+          "Receptor protein-tyrosine kinase erbB-2 inhibitor",
+          "Epidermal growth factor receptor erbB1 inhibitor"
+        ],
+        "evidence_rows": [
+          {
+            "raw_json": "{\"approvedSymbol\": \"EGFR, ERBB2, ERBB4\", \"drugType\": \"Small molecule\", \"label\": \"non-small cell lung carcinoma\", \"mechanismOfAction\": \"Epidermal growth factor receptor erbB1 inhibitor, Receptor protein-tyrosine kinase erbB-2 inhibitor, Receptor protein-tyrosine kinase erbB-4 inhibitor\", \"prefName\": \"AFATINIB DIMALEATE\", \"targetClass\": \"Enzyme, Unclassified protein\", \"targetName\": \"Epidermal growth factor receptor, Receptor tyrosine-protein kinase erbB-2, Receptor tyrosine-protein kinase erbB-4\", \"tradeNames\": \"['Gilotrif' 'Giotrif']\"}",
+            "source_row": 37,
+            "source_file": "farmacos_aprobados.csv"
+          }
+        ]
+      }
+    ],
+    "steps": 1
+  },
+  "error": ""
+}

@@ -1,0 +1,668 @@
+{
+  "run_id": 30,
+  "system": "graph_rag",
+  "question_id": "diabetes_mellitus_count",
+  "repetition": 3,
+  "question": "¿Cuántos fármacos están indicados para diabetes mellitus?",
+  "started_at": "2026-08-20T15:28:25+00:00",
+  "finished_at": "2026-08-20T15:28:29+00:00",
+  "latency_ms": 3707,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "question": "¿Cuántos fármacos están indicados para diabetes mellitus?",
+    "answer": "En la base de datos cargada, los fármacos indicados para diabetes mellitus son:\n\n1. GLYBURIDE (indicado para diabetes mellitus, diabetes tipo 2)\n2. METFORMIN HYDROCHLORIDE (indicado para diabetes mellitus, diabetes tipo 2)\n3. METFORMIN (indicado para diabetes mellitus)\n4. INSULIN HUMAN (indicado para diabetes mellitus, diabetes tipo 2)\n5. INSULIN GLARGINE (indicado para diabetes mellitus, diabetes tipo 1 y tipo 2)\n\nPor lo tanto, hay 5 fármacos indicados para diabetes mellitus.",
+    "results": [
+      {
+        "score": 0.7640187740325928,
+        "drug": "GLYBURIDE",
+        "trade_names": [
+          "Semi-daonil",
+          "Malix",
+          "Glyburide",
+          "Glyburide (micronized)",
+          "Glyburide component of glucovance",
+          "Daonil",
+          "Diabetamide 5",
+          "Calabren",
+          "Glynase",
+          "Libanil",
+          "Diabetamide 2.5",
+          "Euglucon",
+          "Lederglib",
+          "Amglidia",
+          "Diabeta",
+          "Micronase",
+          "Gliken"
+        ],
+        "drug_types": [
+          "Small molecule"
+        ],
+        "indications": [
+          "diabetes mellitus",
+          "type 2 diabetes mellitus"
+        ],
+        "targets": [
+          {
+            "name": "Kir6.2",
+            "symbol": "KCNJ11"
+          },
+          {
+            "name": "Sulfonylurea receptor 1",
+            "symbol": "ABCC8"
+          }
+        ],
+        "target_classes": [
+          "Transporter",
+          "Ion channel"
+        ],
+        "mechanisms": [
+          "Kir6.2 blocker",
+          "Sulfonylurea receptor 1"
+        ],
+        "evidence_rows": [
+          {
+            "raw_json": "{\"approvedSymbol\": \"ABCC8, KCNJ11\", \"drugType\": \"Small molecule\", \"label\": \"diabetes mellitus, type 2 diabetes mellitus\", \"mechanismOfAction\": \"Sulfonylurea receptor 1, Kir6.2 blocker\", \"prefName\": \"GLYBURIDE\", \"targetClass\": \"Ion channel, Transporter\", \"targetName\": \"Sulfonylurea receptor 1, Kir6.2\", \"tradeNames\": \"['Amglidia' 'Calabren' 'Daonil' 'Diabeta' 'Diabetamide 2.5'\\n 'Diabetamide 5' 'Euglucon' 'Gliken' 'Glyburide' 'Glyburide (micronized)'\\n 'Glyburide component of glucovance' 'Glynase' 'Lederglib' 'Libanil'\\n 'Malix' 'Micronase' 'Semi-daonil']\"}",
+            "source_row": 761,
+            "source_file": "farmacos_aprobados.csv"
+          }
+        ]
+      },
+      {
+        "score": 0.76401686668396,
+        "drug": "METFORMIN HYDROCHLORIDE",
+        "trade_names": [
+          "Milform",
+          "Metformin hydrochloride component of actoplus met",
+          "Riomet er",
+          "Glucophage",
+          "Metformin hydrochloride component of prandimet",
+          "Metformin hydrochloride component of zituvimet",
+          "Metformin hydrochloride component of qternmet xr",
+          "Metformin hydrochloride component of synjardy",
+          "Metformin hydrochloride component of kazano",
+          "Metformin hydrochloride component of invokamet",
+          "Glucient sr",
+          "Fortamet",
+          "Metformin hydrochloride component of metaglip",
+          "Glucamet 500",
+          "Ledermetin",
+          "Metformin hydrochloride component of janumet",
+          "Riomet",
+          "Metformin hydrochloride component of qternmet",
+          "Metsol",
+          "Metformin hydrochloride component of kombiglyze xr",
+          "Sukkarto sr",
+          "Glyformin",
+          "Glucamet 850",
+          "Metformin hydrochloride component of jentadueto",
+          "Metformin hydrochloride component of xigduo",
+          "Metformin hydrochloride component of glucovance",
+          "Glumetza",
+          "Metformin hydrochloride",
+          "Metabet sr",
+          "Orabet",
+          "Glucophage sr",
+          "Metformin hydrochloride component of trijardy xr",
+          "Diagemet xl",
+          "Metformin hydrochloride component of segluromet",
+          "Glucophage xr",
+          "Bolamyn sr",
+          "Metformin hydrochloride component of avandamet"
+        ],
+        "drug_types": [
+          "Small molecule"
+        ],
+        "indications": [
+          "diabetes mellitus",
+          "type 2 diabetes mellitus"
+        ],
+        "targets": [
+          {
+            "name": "NDUFV2",
+            "symbol": "NDUFV2"
+          },
+          {
+            "name": "Glycerol-3-phosphate dehydrogenase",
+            "symbol": "COXFA4"
+          },
+          {
+            "name": "NDUFS1",
+            "symbol": "NDUFS1"
+          },
+          {
+            "name": "NDUFA6",
+            "symbol": "NDUFA6"
+          },
+          {
+            "name": "NDUFB9",
+            "symbol": "NDUFB9"
+          },
+          {
+            "name": "MT-ND1",
+            "symbol": "MT-ND1"
+          },
+          {
+            "name": "NDUFAB1",
+            "symbol": "NDUFAB1"
+          },
+          {
+            "name": "MT-ND3",
+            "symbol": "MT-ND3"
+          },
+          {
+            "name": "NDUFS8",
+            "symbol": "NDUFS8"
+          },
+          {
+            "name": "NDUFS7",
+            "symbol": "NDUFS7"
+          },
+          {
+            "name": "NDUFS6",
+            "symbol": "NDUFS6"
+          },
+          {
+            "name": "NDUFB6",
+            "symbol": "NDUFB6"
+          },
+          {
+            "name": "NDUFA2",
+            "symbol": "NDUFA2"
+          },
+          {
+            "name": "MT-ND4L",
+            "symbol": "MT-ND4L"
+          },
+          {
+            "name": "NDUFA5",
+            "symbol": "NDUFA5"
+          },
+          {
+            "name": "NDUFA3",
+            "symbol": "NDUFA3"
+          },
+          {
+            "name": "MT-ND5",
+            "symbol": "MT-ND5"
+          },
+          {
+            "name": "NDUFA11",
+            "symbol": "NDUFA11"
+          },
+          {
+            "name": "NDUFV1",
+            "symbol": "NDUFV1"
+          },
+          {
+            "name": "NDUFA9",
+            "symbol": "NDUFA9"
+          },
+          {
+            "name": "NDUFA7",
+            "symbol": "NDUFA7"
+          },
+          {
+            "name": "NDUFC2",
+            "symbol": "NDUFC2"
+          },
+          {
+            "name": "NDUFS2",
+            "symbol": "NDUFS2"
+          },
+          {
+            "name": "NDUFA13",
+            "symbol": "NDUFA13"
+          },
+          {
+            "name": "NDUFB8",
+            "symbol": "NDUFB8"
+          },
+          {
+            "name": "NDUFC1",
+            "symbol": "NDUFC1"
+          },
+          {
+            "name": "NDUFS4",
+            "symbol": "NDUFS4"
+          },
+          {
+            "name": "NDUFAF1",
+            "symbol": "NDUFAF1"
+          },
+          {
+            "name": "NDUFA10",
+            "symbol": "NDUFA10"
+          },
+          {
+            "name": "NDUFB5",
+            "symbol": "NDUFB5"
+          },
+          {
+            "name": "NDUFAF4",
+            "symbol": "NDUFAF4"
+          },
+          {
+            "name": "NDUFS3",
+            "symbol": "NDUFS3"
+          },
+          {
+            "name": "NDUFB1",
+            "symbol": "NDUFB1"
+          },
+          {
+            "name": "NDUFA1",
+            "symbol": "NDUFA1"
+          },
+          {
+            "name": "NDUFB10",
+            "symbol": "NDUFB10"
+          },
+          {
+            "name": "MT-ND2",
+            "symbol": "MT-ND2"
+          },
+          {
+            "name": "MT-ND6",
+            "symbol": "MT-ND6"
+          },
+          {
+            "name": "NDUFAF2",
+            "symbol": "NDUFAF2"
+          },
+          {
+            "name": "mitochondrial",
+            "symbol": "COXFA4L2"
+          },
+          {
+            "name": "NDUFB2",
+            "symbol": "NDUFB2"
+          },
+          {
+            "name": "NDUFB3",
+            "symbol": "NDUFB3"
+          },
+          {
+            "name": "NDUFB4",
+            "symbol": "NDUFB4"
+          },
+          {
+            "name": "NDUFV3",
+            "symbol": "NDUFV3"
+          },
+          {
+            "name": "NDUFAF3",
+            "symbol": "NDUFAF3"
+          },
+          {
+            "name": "NDUFB7",
+            "symbol": "NDUFB7"
+          },
+          {
+            "name": "NDUFA12",
+            "symbol": "NDUFA12"
+          },
+          {
+            "name": "NDUFS5",
+            "symbol": "NDUFS5"
+          },
+          {
+            "name": "MT-ND4",
+            "symbol": "MT-ND4"
+          },
+          {
+            "name": "NDUFA8",
+            "symbol": "NDUFA8"
+          },
+          {
+            "name": "NDUFB11",
+            "symbol": "NDUFB11"
+          },
+          {
+            "name": "Mitochondrial complex I (NADH dehydrogenase)",
+            "symbol": "GPD2"
+          }
+        ],
+        "target_classes": [
+          "Enzyme"
+        ],
+        "mechanisms": [
+          "Mitochondrial glycerol-3-phosphate dehydrogenase inhibitor",
+          "Mitochondrial complex I (NADH dehydrogenase) inhibitor"
+        ],
+        "evidence_rows": [
+          {
+            "raw_json": "{\"approvedSymbol\": \"COXFA4, COXFA4L2, GPD2, MT-ND1, MT-ND2, MT-ND3, MT-ND4, MT-ND4L, MT-ND5, MT-ND6, NDUFA1, NDUFA10, NDUFA11, NDUFA12, NDUFA13, NDUFA2, NDUFA3, NDUFA5, NDUFA6, NDUFA7, NDUFA8, NDUFA9, NDUFAB1, NDUFAF1, NDUFAF2, NDUFAF3, NDUFAF4, NDUFB1, NDUFB10, NDUFB11, NDUFB2, NDUFB3, NDUFB4, NDUFB5, NDUFB6, NDUFB7, NDUFB8, NDUFB9, NDUFC1, NDUFC2, NDUFS1, NDUFS2, NDUFS3, NDUFS4, NDUFS5, NDUFS6, NDUFS7, NDUFS8, NDUFV1, NDUFV2, NDUFV3\", \"drugType\": \"Small molecule\", \"label\": \"diabetes mellitus, type 2 diabetes mellitus\", \"mechanismOfAction\": \"Mitochondrial complex I (NADH dehydrogenase) inhibitor, Mitochondrial glycerol-3-phosphate dehydrogenase inhibitor\", \"prefName\": \"METFORMIN HYDROCHLORIDE\", \"targetClass\": \"Enzyme\", \"targetName\": \"Glycerol-3-phosphate dehydrogenase, mitochondrial, Mitochondrial complex I (NADH dehydrogenase)\", \"tradeNames\": \"['Bolamyn sr' 'Diagemet xl' 'Fortamet' 'Glucamet 500' 'Glucamet 850'\\n 'Glucient sr' 'Glucophage' 'Glucophage sr' 'Glucophage xr' 'Glumetza'\\n 'Glyformin' 'Ledermetin' 'Metabet sr' 'Metformin hydrochloride'\\n 'Metformin hydrochloride component of actoplus met'\\n 'Metformin hydrochloride component of avandamet'\\n 'Metformin hydrochloride component of glucovance'\\n 'Metformin hydrochloride component of invokamet'\\n 'Metformin hydrochloride component of janumet'\\n 'Metformin hydrochloride component of jentadueto'\\n 'Metformin hydrochloride component of kazano'\\n 'Metformin hydrochloride component of kombiglyze xr'\\n 'Metformin hydrochloride component of metaglip'\\n 'Metformin hydrochloride component of prandimet'\\n 'Metformin hydrochloride component of qternmet'\\n 'Metformin hydrochloride component of qternmet xr'\\n 'Metformin hydrochloride component of segluromet'\\n 'Metformin hydrochloride component of synjardy'\\n 'Metformin hydrochloride component of trijardy xr'\\n 'Metformin hydrochloride component of xigduo'\\n 'Metformin hydrochloride component of zituvimet' 'Metsol' 'Milform'\\n 'Orabet' 'Riomet' 'Riomet er' 'Sukkarto sr']\"}",
+            "source_row": 1014,
+            "source_file": "farmacos_aprobados.csv"
+          }
+        ]
+      },
+      {
+        "score": 0.7605853080749512,
+        "drug": "METFORMIN",
+        "trade_names": [],
+        "drug_types": [
+          "Small molecule"
+        ],
+        "indications": [
+          "diabetes mellitus"
+        ],
+        "targets": [
+          {
+            "name": "NDUFAF4",
+            "symbol": "NDUFAF4"
+          },
+          {
+            "name": "NDUFB5",
+            "symbol": "NDUFB5"
+          },
+          {
+            "name": "NDUFAB1",
+            "symbol": "NDUFAB1"
+          },
+          {
+            "name": "MT-ND3",
+            "symbol": "MT-ND3"
+          },
+          {
+            "name": "NDUFS8",
+            "symbol": "NDUFS8"
+          },
+          {
+            "name": "NDUFV1",
+            "symbol": "NDUFV1"
+          },
+          {
+            "name": "NDUFS7",
+            "symbol": "NDUFS7"
+          },
+          {
+            "name": "NDUFS5",
+            "symbol": "NDUFS5"
+          },
+          {
+            "name": "Glycerol-3-phosphate dehydrogenase",
+            "symbol": "COXFA4"
+          },
+          {
+            "name": "NDUFB8",
+            "symbol": "NDUFB8"
+          },
+          {
+            "name": "NDUFS1",
+            "symbol": "NDUFS1"
+          },
+          {
+            "name": "NDUFA13",
+            "symbol": "NDUFA13"
+          },
+          {
+            "name": "mitochondrial",
+            "symbol": "COXFA4L2"
+          },
+          {
+            "name": "NDUFV3",
+            "symbol": "NDUFV3"
+          },
+          {
+            "name": "MT-ND2",
+            "symbol": "MT-ND2"
+          },
+          {
+            "name": "NDUFA8",
+            "symbol": "NDUFA8"
+          },
+          {
+            "name": "NDUFS4",
+            "symbol": "NDUFS4"
+          },
+          {
+            "name": "NDUFA1",
+            "symbol": "NDUFA1"
+          },
+          {
+            "name": "MT-ND5",
+            "symbol": "MT-ND5"
+          },
+          {
+            "name": "NDUFV2",
+            "symbol": "NDUFV2"
+          },
+          {
+            "name": "NDUFB1",
+            "symbol": "NDUFB1"
+          },
+          {
+            "name": "NDUFA9",
+            "symbol": "NDUFA9"
+          },
+          {
+            "name": "NDUFB3",
+            "symbol": "NDUFB3"
+          },
+          {
+            "name": "NDUFA7",
+            "symbol": "NDUFA7"
+          },
+          {
+            "name": "NDUFA5",
+            "symbol": "NDUFA5"
+          },
+          {
+            "name": "MT-ND4L",
+            "symbol": "MT-ND4L"
+          },
+          {
+            "name": "NDUFAF2",
+            "symbol": "NDUFAF2"
+          },
+          {
+            "name": "NDUFB10",
+            "symbol": "NDUFB10"
+          },
+          {
+            "name": "NDUFA12",
+            "symbol": "NDUFA12"
+          },
+          {
+            "name": "MT-ND1",
+            "symbol": "MT-ND1"
+          },
+          {
+            "name": "Mitochondrial complex I (NADH dehydrogenase)",
+            "symbol": "GPD2"
+          },
+          {
+            "name": "NDUFA6",
+            "symbol": "NDUFA6"
+          },
+          {
+            "name": "NDUFC2",
+            "symbol": "NDUFC2"
+          },
+          {
+            "name": "NDUFC1",
+            "symbol": "NDUFC1"
+          },
+          {
+            "name": "NDUFB9",
+            "symbol": "NDUFB9"
+          },
+          {
+            "name": "NDUFAF1",
+            "symbol": "NDUFAF1"
+          },
+          {
+            "name": "NDUFA3",
+            "symbol": "NDUFA3"
+          },
+          {
+            "name": "NDUFAF3",
+            "symbol": "NDUFAF3"
+          },
+          {
+            "name": "NDUFB11",
+            "symbol": "NDUFB11"
+          },
+          {
+            "name": "NDUFS2",
+            "symbol": "NDUFS2"
+          },
+          {
+            "name": "NDUFB4",
+            "symbol": "NDUFB4"
+          },
+          {
+            "name": "NDUFB2",
+            "symbol": "NDUFB2"
+          },
+          {
+            "name": "NDUFA10",
+            "symbol": "NDUFA10"
+          },
+          {
+            "name": "MT-ND6",
+            "symbol": "MT-ND6"
+          },
+          {
+            "name": "NDUFA11",
+            "symbol": "NDUFA11"
+          },
+          {
+            "name": "MT-ND4",
+            "symbol": "MT-ND4"
+          },
+          {
+            "name": "NDUFS3",
+            "symbol": "NDUFS3"
+          },
+          {
+            "name": "NDUFB7",
+            "symbol": "NDUFB7"
+          },
+          {
+            "name": "NDUFA2",
+            "symbol": "NDUFA2"
+          },
+          {
+            "name": "NDUFB6",
+            "symbol": "NDUFB6"
+          },
+          {
+            "name": "NDUFS6",
+            "symbol": "NDUFS6"
+          }
+        ],
+        "target_classes": [
+          "Enzyme"
+        ],
+        "mechanisms": [
+          "Mitochondrial complex I (NADH dehydrogenase) inhibitor",
+          "Mitochondrial glycerol-3-phosphate dehydrogenase inhibitor"
+        ],
+        "evidence_rows": [
+          {
+            "raw_json": "{\"approvedSymbol\": \"COXFA4, COXFA4L2, GPD2, MT-ND1, MT-ND2, MT-ND3, MT-ND4, MT-ND4L, MT-ND5, MT-ND6, NDUFA1, NDUFA10, NDUFA11, NDUFA12, NDUFA13, NDUFA2, NDUFA3, NDUFA5, NDUFA6, NDUFA7, NDUFA8, NDUFA9, NDUFAB1, NDUFAF1, NDUFAF2, NDUFAF3, NDUFAF4, NDUFB1, NDUFB10, NDUFB11, NDUFB2, NDUFB3, NDUFB4, NDUFB5, NDUFB6, NDUFB7, NDUFB8, NDUFB9, NDUFC1, NDUFC2, NDUFS1, NDUFS2, NDUFS3, NDUFS4, NDUFS5, NDUFS6, NDUFS7, NDUFS8, NDUFV1, NDUFV2, NDUFV3\", \"drugType\": \"Small molecule\", \"label\": \"diabetes mellitus\", \"mechanismOfAction\": \"Mitochondrial complex I (NADH dehydrogenase) inhibitor, Mitochondrial glycerol-3-phosphate dehydrogenase inhibitor\", \"prefName\": \"METFORMIN\", \"targetClass\": \"Enzyme\", \"targetName\": \"Glycerol-3-phosphate dehydrogenase, mitochondrial, Mitochondrial complex I (NADH dehydrogenase)\", \"tradeNames\": \"[]\"}",
+            "source_row": 1013,
+            "source_file": "farmacos_aprobados.csv"
+          }
+        ]
+      },
+      {
+        "score": 0.7444517612457275,
+        "drug": "INSULIN HUMAN",
+        "trade_names": [
+          "Humulin r",
+          "Actrapid",
+          "Ins humulin r",
+          "Velosulin",
+          "Inpremzia",
+          "Afrezza",
+          "Humulin br",
+          "Exubera",
+          "Myxredlin",
+          "Insuman",
+          "Insuman infusat"
+        ],
+        "drug_types": [
+          "Protein"
+        ],
+        "indications": [
+          "type 2 diabetes mellitus",
+          "diabetes mellitus"
+        ],
+        "targets": [
+          {
+            "name": "Insulin receptor",
+            "symbol": "INSR"
+          }
+        ],
+        "target_classes": [
+          "Enzyme"
+        ],
+        "mechanisms": [
+          "Insulin receptor agonist"
+        ],
+        "evidence_rows": [
+          {
+            "raw_json": "{\"approvedSymbol\": \"INSR\", \"drugType\": \"Protein\", \"label\": \"diabetes mellitus, type 2 diabetes mellitus\", \"mechanismOfAction\": \"Insulin receptor agonist\", \"prefName\": \"INSULIN HUMAN\", \"targetClass\": \"Enzyme\", \"targetName\": \"Insulin receptor\", \"tradeNames\": \"['Actrapid' 'Afrezza' 'Exubera' 'Humulin br' 'Humulin r' 'Inpremzia'\\n 'Ins humulin r' 'Insuman' 'Insuman infusat' 'Myxredlin' 'Velosulin']\"}",
+            "source_row": 841,
+            "source_file": "farmacos_aprobados.csv"
+          }
+        ]
+      },
+      {
+        "score": 0.7425196170806885,
+        "drug": "INSULIN GLARGINE",
+        "trade_names": [
+          "Abasaglar (previously abasria)",
+          "Ins lantus",
+          "Basaglar",
+          "Toujeo solostar",
+          "Lusduna",
+          "Ins lantus optiset",
+          "Abasaglar",
+          "Semglee",
+          "Abasaglar kwikpen",
+          "Ins lantus solostar",
+          "Ins lantus opticlik",
+          "Toujeo",
+          "Lantus",
+          "Insulin glargine component of basaglar",
+          "Insulin glargine component of soliqua 100/33",
+          "Toujeo (previously optisulin)"
+        ],
+        "drug_types": [
+          "Protein"
+        ],
+        "indications": [
+          "type 1 diabetes mellitus",
+          "type 2 diabetes mellitus",
+          "diabetes mellitus"
+        ],
+        "targets": [
+          {
+            "name": "Insulin receptor",
+            "symbol": "INSR"
+          }
+        ],
+        "target_classes": [
+          "Enzyme"
+        ],
+        "mechanisms": [
+          "Insulin receptor agonist"
+        ],
+        "evidence_rows": [
+          {
+            "raw_json": "{\"approvedSymbol\": \"INSR\", \"drugType\": \"Protein\", \"label\": \"diabetes mellitus, type 1 diabetes mellitus, type 2 diabetes mellitus\", \"mechanismOfAction\": \"Insulin receptor agonist\", \"prefName\": \"INSULIN GLARGINE\", \"targetClass\": \"Enzyme\", \"targetName\": \"Insulin receptor\", \"tradeNames\": \"['Abasaglar' 'Abasaglar (previously abasria)' 'Abasaglar kwikpen'\\n 'Basaglar' 'Ins lantus' 'Ins lantus opticlik' 'Ins lantus optiset'\\n 'Ins lantus solostar' 'Insulin glargine component of basaglar'\\n 'Insulin glargine component of soliqua 100/33' 'Lantus' 'Lusduna'\\n 'Semglee' 'Toujeo' 'Toujeo (previously optisulin)' 'Toujeo solostar']\"}",
+            "source_row": 839,
+            "source_file": "farmacos_aprobados.csv"
+          }
+        ]
+      }
+    ],
+    "steps": 1
+  },
+  "error": ""
+}

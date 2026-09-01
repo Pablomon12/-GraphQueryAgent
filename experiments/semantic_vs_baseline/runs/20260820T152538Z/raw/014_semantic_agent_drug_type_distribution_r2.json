@@ -1,0 +1,69 @@
+{
+  "run_id": 14,
+  "system": "semantic_agent",
+  "question_id": "drug_type_distribution",
+  "repetition": 2,
+  "question": "¿Cuántos fármacos hay por cada tipo de fármaco?",
+  "started_at": "2026-08-20T15:26:49+00:00",
+  "finished_at": "2026-08-20T15:26:58+00:00",
+  "latency_ms": 8746,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "question": "¿Cuántos fármacos hay por cada tipo de fármaco?",
+    "sparql": "PREFIX : <https://example.org/farmacos-aprobados/ontology#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n\nSELECT ?type (COUNT(DISTINCT ?drug) AS ?n)\nWHERE {\n  ?drug a :Drug ;\n        :hasDrugType ?drug_type .\n  ?drug_type rdfs:label ?type .\n}\nGROUP BY ?type\nORDER BY DESC(?n)\n",
+    "results": {
+      "bindings": [
+        {
+          "type": "Small molecule",
+          "n": 1440
+        },
+        {
+          "type": "Protein",
+          "n": 162
+        },
+        {
+          "type": "Antibody",
+          "n": 106
+        },
+        {
+          "type": "Unknown",
+          "n": 21
+        },
+        {
+          "type": "Oligonucleotide",
+          "n": 19
+        },
+        {
+          "type": "Antibody drug conjugate",
+          "n": 13
+        },
+        {
+          "type": "Gene",
+          "n": 10
+        },
+        {
+          "type": "Enzyme",
+          "n": 7
+        },
+        {
+          "type": "Oligosaccharide",
+          "n": 6
+        },
+        {
+          "type": "Cell",
+          "n": 2
+        }
+      ]
+    },
+    "answer": "Hay 1786 fármacos aprobados clasificados en 10 tipos. Los tipos con más fármacos son Small molecule (1440), Protein (162) y Antibody (106). Otros tipos incluyen Unknown, Oligonucleotide, Antibody drug conjugate, Gene, Enzyme, Oligosaccharide y Cell con cantidades menores.",
+    "phases": [
+      "planning",
+      "schema_discovery",
+      "execution",
+      "reporting"
+    ],
+    "steps": 4
+  },
+  "error": ""
+}

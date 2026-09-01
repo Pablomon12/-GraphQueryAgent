@@ -1,0 +1,28 @@
+{
+  "run_id": 17,
+  "system": "semantic_agent",
+  "question_id": "diabetes_mellitus_count",
+  "repetition": 2,
+  "question": "¿Cuántos fármacos están indicados para diabetes mellitus?",
+  "started_at": "2026-08-20T15:27:06+00:00",
+  "finished_at": "2026-08-20T15:27:12+00:00",
+  "latency_ms": 6232,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "question": "¿Cuántos fármacos están indicados para diabetes mellitus?",
+    "sparql": "PREFIX : <https://example.org/farmacos-aprobados/ontology#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n\nSELECT (COUNT(DISTINCT ?drug) AS ?n)\nWHERE {\n  ?drug a :Drug ;\n        :hasIndication/rdfs:label ?indication .\n  FILTER(LCASE(STR(?indication)) = \"diabetes mellitus\")\n}",
+    "results": {
+      "n": 63
+    },
+    "answer": "Hay 63 fármacos indicados para diabetes mellitus según el dataset.",
+    "phases": [
+      "planning",
+      "schema_discovery",
+      "execution",
+      "reporting"
+    ],
+    "steps": 4
+  },
+  "error": ""
+}

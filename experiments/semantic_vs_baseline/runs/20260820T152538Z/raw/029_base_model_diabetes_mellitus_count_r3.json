@@ -1,0 +1,18 @@
+{
+  "run_id": 29,
+  "system": "base_model",
+  "question_id": "diabetes_mellitus_count",
+  "repetition": 3,
+  "question": "¿Cuántos fármacos están indicados para diabetes mellitus?",
+  "started_at": "2026-08-20T15:28:23+00:00",
+  "finished_at": "2026-08-20T15:28:25+00:00",
+  "latency_ms": 2380,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "question": "¿Cuántos fármacos están indicados para diabetes mellitus?",
+    "answer": "Existen múltiples fármacos indicados para el tratamiento de la diabetes mellitus, incluyendo varias clases principales: insulinas, biguanidas (como la metformina), sulfonilureas, inhibidores de la DPP-4, agonistas del receptor GLP-1, inhibidores del SGLT2, tiazolidinedionas, meglitinidas y otros. En total, hay más de 20 fármacos diferentes aprobados para el manejo de la diabetes mellitus.",
+    "steps": 1
+  },
+  "error": ""
+}

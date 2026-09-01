@@ -1,0 +1,18 @@
+{
+  "run_id": 24,
+  "system": "base_model",
+  "question_id": "egfr_target_drugs",
+  "repetition": 2,
+  "question": "¿Qué fármacos tienen como target aprobado EGFR?",
+  "started_at": "2026-08-20T15:27:58+00:00",
+  "finished_at": "2026-08-20T15:27:59+00:00",
+  "latency_ms": 1236,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "question": "¿Qué fármacos tienen como target aprobado EGFR?",
+    "answer": "['Erlotinib', 'Gefitinib', 'Afatinib', 'Osimertinib', 'Dacomitinib', 'Cetuximab', 'Necitumumab']",
+    "steps": 1
+  },
+  "error": ""
+}

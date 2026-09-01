@@ -1,0 +1,138 @@
+{
+  "run_id": 22,
+  "system": "semantic_agent",
+  "question_id": "egfr_target_drugs",
+  "repetition": 2,
+  "question": "¿Qué fármacos tienen como target aprobado EGFR?",
+  "started_at": "2026-08-20T15:27:32+00:00",
+  "finished_at": "2026-08-20T15:27:51+00:00",
+  "latency_ms": 19533,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "question": "¿Qué fármacos tienen como target aprobado EGFR?",
+    "sparql": "PREFIX : <https://example.org/farmacos-aprobados/ontology#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n\nSELECT DISTINCT ?drug\nWHERE {\n  ?drug_uri a :Drug ;\n            rdfs:label ?drug ;\n            :hasInteraction/:hasTarget ?target .\n  ?target :hasApprovedSymbol \"EGFR\" .\n}\nORDER BY ?drug\n",
+    "results": {
+      "head": {
+        "vars": [
+          "drug"
+        ]
+      },
+      "results": {
+        "bindings": [
+          {
+            "drug": {
+              "type": "literal",
+              "value": "AFATINIB DIMALEATE"
+            }
+          },
+          {
+            "drug": {
+              "type": "literal",
+              "value": "AMIVANTAMAB"
+            }
+          },
+          {
+            "drug": {
+              "type": "literal",
+              "value": "BRIGATINIB"
+            }
+          },
+          {
+            "drug": {
+              "type": "literal",
+              "value": "CETUXIMAB"
+            }
+          },
+          {
+            "drug": {
+              "type": "literal",
+              "value": "DACOMITINIB"
+            }
+          },
+          {
+            "drug": {
+              "type": "literal",
+              "value": "ERLOTINIB HYDROCHLORIDE"
+            }
+          },
+          {
+            "drug": {
+              "type": "literal",
+              "value": "GEFITINIB"
+            }
+          },
+          {
+            "drug": {
+              "type": "literal",
+              "value": "LAPATINIB DITOSYLATE"
+            }
+          },
+          {
+            "drug": {
+              "type": "literal",
+              "value": "MOBOCERTINIB"
+            }
+          },
+          {
+            "drug": {
+              "type": "literal",
+              "value": "MOBOCERTINIB SUCCINATE"
+            }
+          },
+          {
+            "drug": {
+              "type": "literal",
+              "value": "NECITUMUMAB"
+            }
+          },
+          {
+            "drug": {
+              "type": "literal",
+              "value": "NERATINIB MALEATE"
+            }
+          },
+          {
+            "drug": {
+              "type": "literal",
+              "value": "OLMUTINIB"
+            }
+          },
+          {
+            "drug": {
+              "type": "literal",
+              "value": "OSIMERTINIB"
+            }
+          },
+          {
+            "drug": {
+              "type": "literal",
+              "value": "OSIMERTINIB MESYLATE"
+            }
+          },
+          {
+            "drug": {
+              "type": "literal",
+              "value": "PANITUMUMAB"
+            }
+          },
+          {
+            "drug": {
+              "type": "literal",
+              "value": "VANDETANIB"
+            }
+          }
+        ]
+      }
+    },
+    "answer": "Hay 17 fármacos aprobados que tienen como target aprobado EGFR. Algunos de ellos son AFATINIB DIMALEATE, AMIVANTAMAB, BRIGATINIB, CETUXIMAB, y OSIMERTINIB.",
+    "phases": [
+      "planning",
+      "schema_discovery",
+      "execution",
+      "reporting"
+    ],
+    "steps": 4
+  },
+  "error": ""
+}

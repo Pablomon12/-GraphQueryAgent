@@ -1,0 +1,18 @@
+{
+  "run_id": 32,
+  "system": "base_model",
+  "question_id": "abarelix_mechanism_target",
+  "repetition": 3,
+  "question": "¿Qué mecanismo de acción y qué diana tiene ABARELIX?",
+  "started_at": "2026-08-20T15:28:39+00:00",
+  "finished_at": "2026-08-20T15:28:41+00:00",
+  "latency_ms": 1804,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "question": "¿Qué mecanismo de acción y qué diana tiene ABARELIX?",
+    "answer": "Abarelix es un antagonista de la hormona liberadora de gonadotropinas (GnRH). Su mecanismo de acción consiste en bloquear los receptores de GnRH en la hipófisis, lo que inhibe la liberación de las gonadotropinas LH y FSH. Esto conduce a una disminución en la producción de testosterona en los testículos. La diana principal de Abarelix son los receptores de GnRH en la hipófisis.",
+    "steps": 1
+  },
+  "error": ""
+}

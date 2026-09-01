@@ -1,0 +1,224 @@
+{
+  "run_id": 20,
+  "system": "graph_rag",
+  "question_id": "abarelix_mechanism_target",
+  "repetition": 2,
+  "question": "¿Qué mecanismo de acción y qué diana tiene ABARELIX?",
+  "started_at": "2026-08-20T15:27:26+00:00",
+  "finished_at": "2026-08-20T15:27:30+00:00",
+  "latency_ms": 4411,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "question": "¿Qué mecanismo de acción y qué diana tiene ABARELIX?",
+    "answer": "El fármaco ABARELIX tiene como mecanismo de acción ser un antagonista del receptor de la hormona liberadora de gonadotropina (Gonadotropin-releasing hormone receptor antagonist). Su diana es el receptor de la hormona liberadora de gonadotropina (Gonadotropin-releasing hormone receptor, símbolo GNRHR).",
+    "results": [
+      {
+        "score": 0.8269634246826172,
+        "drug": "ABARELIX",
+        "trade_names": [
+          "Plenaxis"
+        ],
+        "drug_types": [
+          "Protein"
+        ],
+        "indications": [
+          "neoplasm"
+        ],
+        "targets": [
+          {
+            "name": "Gonadotropin-releasing hormone receptor",
+            "symbol": "GNRHR"
+          }
+        ],
+        "target_classes": [
+          "Membrane receptor"
+        ],
+        "mechanisms": [
+          "Gonadotropin-releasing hormone receptor antagonist"
+        ],
+        "evidence_rows": [
+          {
+            "raw_json": "{\"approvedSymbol\": \"GNRHR\", \"drugType\": \"Protein\", \"label\": \"neoplasm\", \"mechanismOfAction\": \"Gonadotropin-releasing hormone receptor antagonist\", \"prefName\": \"ABARELIX\", \"targetClass\": \"Membrane receptor\", \"targetName\": \"Gonadotropin-releasing hormone receptor\", \"tradeNames\": \"['Plenaxis']\"}",
+            "source_row": 4,
+            "source_file": "farmacos_aprobados.csv"
+          }
+        ]
+      },
+      {
+        "score": 0.7518305778503418,
+        "drug": "ABATACEPT",
+        "trade_names": [
+          "Orencia clickject",
+          "Orencia"
+        ],
+        "drug_types": [
+          "Protein"
+        ],
+        "indications": [
+          "rheumatoid arthritis",
+          "juvenile idiopathic arthritis",
+          "immune system disease",
+          "psoriatic arthritis"
+        ],
+        "targets": [
+          {
+            "name": "T-lymphocyte activation antigen CD86",
+            "symbol": "CD86"
+          },
+          {
+            "name": "T-lymphocyte activation antigen CD80",
+            "symbol": "CD80"
+          }
+        ],
+        "target_classes": [
+          "Surface antigen"
+        ],
+        "mechanisms": [
+          "T-lymphocyte activation antigen CD86 inhibitor",
+          "T-lymphocyte activation antigen CD80 inhibitor"
+        ],
+        "evidence_rows": [
+          {
+            "raw_json": "{\"approvedSymbol\": \"CD80, CD86\", \"drugType\": \"Protein\", \"label\": \"immune system disease, juvenile idiopathic arthritis, psoriatic arthritis, rheumatoid arthritis\", \"mechanismOfAction\": \"T-lymphocyte activation antigen CD80 inhibitor, T-lymphocyte activation antigen CD86 inhibitor\", \"prefName\": \"ABATACEPT\", \"targetClass\": \"Surface antigen\", \"targetName\": \"T-lymphocyte activation antigen CD80, T-lymphocyte activation antigen CD86\", \"tradeNames\": \"['Orencia' 'Orencia clickject']\"}",
+            "source_row": 5,
+            "source_file": "farmacos_aprobados.csv"
+          }
+        ]
+      },
+      {
+        "score": 0.7509393692016602,
+        "drug": "ABEMACICLIB",
+        "trade_names": [
+          "Verzenios",
+          "Verzenio"
+        ],
+        "drug_types": [
+          "Small molecule"
+        ],
+        "indications": [
+          "breast neoplasm",
+          "neoplasm",
+          "breast cancer",
+          "breast carcinoma"
+        ],
+        "targets": [
+          {
+            "name": "Cyclin-dependent kinase 6",
+            "symbol": "CDK6"
+          },
+          {
+            "name": "Cyclin-dependent kinase 4",
+            "symbol": "CDK4"
+          }
+        ],
+        "target_classes": [
+          "Other cytosolic protein",
+          "Enzyme"
+        ],
+        "mechanisms": [
+          "Cyclin-dependent kinase 4 inhibitor",
+          "Cyclin-dependent kinase 6 inhibitor"
+        ],
+        "evidence_rows": [
+          {
+            "raw_json": "{\"approvedSymbol\": \"CDK4, CDK6\", \"drugType\": \"Small molecule\", \"label\": \"breast cancer, breast carcinoma, breast neoplasm, neoplasm\", \"mechanismOfAction\": \"Cyclin-dependent kinase 4 inhibitor, Cyclin-dependent kinase 6 inhibitor\", \"prefName\": \"ABEMACICLIB\", \"targetClass\": \"Enzyme, Other cytosolic protein\", \"targetName\": \"Cyclin-dependent kinase 4, Cyclin-dependent kinase 6\", \"tradeNames\": \"['Verzenio' 'Verzenios']\"}",
+            "source_row": 7,
+            "source_file": "farmacos_aprobados.csv"
+          }
+        ]
+      },
+      {
+        "score": 0.7502639293670654,
+        "drug": "ABIRATERONE ACETATE",
+        "trade_names": [
+          "Zytiga",
+          "Yonsa",
+          "Abiraterone acetate component of akeega",
+          "Abiraterone mylan",
+          "Abiraterone accord",
+          "Abiraterone krka"
+        ],
+        "drug_types": [
+          "Small molecule"
+        ],
+        "indications": [
+          "prostate cancer",
+          "metastatic prostate cancer",
+          "prostate carcinoma"
+        ],
+        "targets": [
+          {
+            "name": "Cytochrome P450 11B2",
+            "symbol": "CYP17A1"
+          }
+        ],
+        "target_classes": [
+          "Transcription factor",
+          "Enzyme"
+        ],
+        "mechanisms": [
+          "Cytochrome P450 17A1 inhibitor"
+        ],
+        "evidence_rows": [
+          {
+            "raw_json": "{\"approvedSymbol\": \"CYP17A1\", \"drugType\": \"Small molecule\", \"label\": \"metastatic prostate cancer, prostate cancer, prostate carcinoma\", \"mechanismOfAction\": \"Cytochrome P450 17A1 inhibitor\", \"prefName\": \"ABIRATERONE ACETATE\", \"targetClass\": \"Enzyme\", \"targetName\": \"Steroid 17-alpha-hydroxylase/17,20 lyase\", \"tradeNames\": \"['Abiraterone accord' 'Abiraterone acetate component of akeega'\\n 'Abiraterone krka' 'Abiraterone mylan' 'Yonsa' 'Zytiga']\"}",
+            "source_row": 9,
+            "source_file": "farmacos_aprobados.csv"
+          }
+        ]
+      },
+      {
+        "score": 0.7497470378875732,
+        "drug": "AFLIBERCEPT",
+        "trade_names": [
+          "Zaltrap",
+          "Eylea",
+          "Yesafili"
+        ],
+        "drug_types": [
+          "Protein"
+        ],
+        "indications": [
+          "macrovascular complications of diabetes",
+          "retinal vein occlusion",
+          "wet macular degeneration",
+          "diabetic retinopathy",
+          "ocular vascular disease",
+          "macular retinal edema",
+          "neoplasm",
+          "colorectal cancer",
+          "colorectal adenocarcinoma"
+        ],
+        "targets": [
+          {
+            "name": "Placenta growth factor",
+            "symbol": "PGF"
+          },
+          {
+            "name": "Vascular endothelial growth factor A",
+            "symbol": "VEGFA"
+          }
+        ],
+        "target_classes": [
+          "Secreted protein",
+          "Enzyme",
+          "Unclassified protein"
+        ],
+        "mechanisms": [
+          "Placenta growth factor inhibitor",
+          "Vascular endothelial growth factor A inhibitor"
+        ],
+        "evidence_rows": [
+          {
+            "raw_json": "{\"approvedSymbol\": \"PGF, VEGFA\", \"drugType\": \"Protein\", \"label\": \"colorectal adenocarcinoma, colorectal cancer, diabetic retinopathy, macrovascular complications of diabetes, macular retinal edema, neoplasm, ocular vascular disease, retinal vein occlusion, wet macular degeneration\", \"mechanismOfAction\": \"Placenta growth factor inhibitor, Vascular endothelial growth factor A inhibitor\", \"prefName\": \"AFLIBERCEPT\", \"targetClass\": \"Enzyme, Secreted protein\", \"targetName\": \"Placenta growth factor, Vascular endothelial growth factor A, long form\", \"tradeNames\": \"['Eylea' 'Yesafili' 'Zaltrap']\"}",
+            "source_row": 38,
+            "source_file": "farmacos_aprobados.csv"
+          }
+        ]
+      }
+    ],
+    "steps": 1
+  },
+  "error": ""
+}

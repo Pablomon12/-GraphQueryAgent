@@ -1,0 +1,19 @@
+{
+  "run_id": 27,
+  "system": "graph_rag",
+  "question_id": "drug_type_distribution",
+  "repetition": 3,
+  "question": "¿Cuántos fármacos hay por cada tipo de fármaco?",
+  "started_at": "2026-08-20T15:28:10+00:00",
+  "finished_at": "2026-08-20T15:28:14+00:00",
+  "latency_ms": 4381,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "question": "¿Cuántos fármacos hay por cada tipo de fármaco?",
+    "answer": "No hay información suficiente en la base cargada para responder con veracidad.",
+    "results": [],
+    "steps": 1
+  },
+  "error": ""
+}
