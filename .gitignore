@@ -41,9 +41,12 @@ Thumbs.db
 # Documentation and thesis artifacts
 docs/
 TFM_DOC*/
-README_GRAPHRAG.md
 *.docx
 *.pptx
+
+# Demo videos
+demo/*.mov
+demo/*.mp4
 
 # Experiment outputs
 experiments/**/runs/
